@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Particle Explosion Button — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e;--accent:#4f46e5;--border:#1e1e22}
+  *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,6vw,64px);font-weight:600;line-height:1.15;max-width:700px;letter-spacing:-.025em}
+  .hero h1 span{color:var(--accent)}
+  .hero p{margin-top:16px;font-size:18px;color:var(--muted);max-width:50ch;line-height:1.5}
+  .buttons-section{padding:80px 24px;display:flex;flex-direction:column;align-items:center;gap:48px}
+  .btn-wrap{position:relative;display:inline-block}
+  .explode-btn{padding:16px 48px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:500;border:none;border-radius:14px;cursor:pointer;position:relative;transition:transform .2s cubic-bezier(.16,1,.3,1);z-index:2}
+  .explode-btn:active{transform:scale(.95)}
+  .explode-btn.primary{background:var(--accent);color:white}
+  .explode-btn.outline{background:transparent;color:var(--text);border:1px solid var(--border)}
+  .explode-btn.danger{background:#e85d3a;color:white}
+  .explode-btn.success{background:#22c55e;color:white}
+  .btn-label{font-size:13px;color:var(--muted);margin-top:8px;text-align:center}
+  .particle{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:9999}
+  .confetti{position:fixed;width:6px;height:12px;pointer-events:none;z-index:9999;border-radius:2px}
+  .ring{position:fixed;border-radius:50%;pointer-events:none;z-index:9998;border:2px solid;opacity:0}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(79,70,229,.15);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Paradigm 23 — Particle Explosion Button</div>
+  <h1>Click the button. <span>Watch it explode.</span></h1>
+  <p>CTAs that burst into particles, confetti, or expanding rings on click. Tactile feedback that celebrates the action.</p>
+</section>
+<section class="buttons-section">
+  <div>
+    <div class="btn-wrap"><button class="explode-btn primary" data-type="particles" data-color="#4f46e5">Submit</button></div>
+    <div class="btn-label">Particle burst</div>
+  </div>
+  <div>
+    <div class="btn-wrap"><button class="explode-btn danger" data-type="confetti" data-color="#e85d3a">Delete</button></div>
+    <div class="btn-label">Confetti shower</div>
+  </div>
+  <div>
+    <div class="btn-wrap"><button class="explode-btn success" data-type="ring" data-color="#22c55e">Confirm</button></div>
+    <div class="btn-label">Expanding ring</div>
+  </div>
+  <div>
+    <div class="btn-wrap"><button class="explode-btn outline" data-type="particles" data-color="#eae7e2">Click me</button></div>
+    <div class="btn-label">Outline variant</div>
+  </div>
+</section>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Celebration confirms action</h2>
+  <p>A button that explodes gives the visitor a dopamine hit. It confirms their action was received and makes the experience memorable. Form submissions, add-to-cart, and subscribe buttons all benefit. The effect fires once per click — it's a reward, not a distraction.</p>
+</section>
+<footer>Paradigm Demo — Particle Explosion Button</footer>
+<script>
+(function(){
+  document.querySelectorAll('.explode-btn').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      var rect=btn.getBoundingClientRect();
+      var cx=rect.left+rect.width/2;
+      var cy=rect.top+rect.height/2;
+      var type=btn.dataset.type;
+      var color=btn.dataset.color;
+      if(type==='particles')spawnParticles(cx,cy,color);
+      else if(type==='confetti')spawnConfetti(cx,cy);
+      else if(type==='ring')spawnRing(cx,cy,color);
+    });
+  });
+  function spawnParticles(cx,cy,color){
+    for(var i=0;i<20;i++){
+      var p=document.createElement('div');p.className='particle';
+      p.style.background=color;p.style.left=cx+'px';p.style.top=cy+'px';
+      document.body.appendChild(p);
+      var angle=Math.random()*Math.PI*2;
+      var dist=40+Math.random()*80;
+      var dx=Math.cos(angle)*dist;
+      var dy=Math.sin(angle)*dist-40;
+      p.style.transition='all .6s cubic-bezier(.16,1,.3,1)';
+      p.offsetHeight;
+      p.style.transform='translate('+dx+'px,'+dy+'px) scale(0)';
+      p.style.opacity='0';
+      setTimeout(function(el){el.remove()},700,p);
+    }
+  }
+  function spawnConfetti(cx,cy){
+    var colors=['#e85d3a','#ff8866','#ffd700','#ff69b4','#00f0ff','#4f46e5'];
+    for(var i=0;i<30;i++){
+      var c=document.createElement('div');c.className='confetti';
+      c.style.background=colors[Math.floor(Math.random()*colors.length)];
+      c.style.left=cx+'px';c.style.top=cy+'px';
+      document.body.appendChild(c);
+      var dx=(Math.random()-.5)*200;
+      var dy=-60-Math.random()*120;
+      var rot=Math.random()*720;
+      c.style.transition='all .8s cubic-bezier(.16,1,.3,1)';
+      c.offsetHeight;
+      c.style.transform='translate('+dx+'px,'+dy+'px) rotate('+rot+'deg) scale(0)';
+      c.style.opacity='0';
+      setTimeout(function(el){el.remove()},900,c);
+    }
+  }
+  function spawnRing(cx,cy,color){
+    var r=document.createElement('div');r.className='ring';
+    r.style.borderColor=color;r.style.left=cx+'px';r.style.top=cy+'px';
+    r.style.width='10px';r.style.height='10px';
+    r.style.marginLeft='-5px';r.style.marginTop='-5px';
+    document.body.appendChild(r);
+    r.style.transition='all .5s cubic-bezier(.16,1,.3,1)';
+    r.offsetHeight;
+    r.style.width='120px';r.style.height='120px';
+    r.style.marginLeft='-60px';r.style.marginTop='-60px';
+    r.style.opacity='1';
+    setTimeout(function(){r.style.opacity='0'},200);
+    setTimeout(function(){r.remove()},600);
+  }
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

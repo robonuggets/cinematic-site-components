@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Mask Reveal — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --text: #f0ede8;
+    --muted: #5a5a5e;
+    --accent: #c8a97e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ─── Hero ─── */
+  .hero {
+    min-height: 100dvh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 24px;
+  }
+  .hero-label {
+    font-size: 12px; font-weight: 400; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 6vw, 64px); font-weight: 300;
+    line-height: 1.3; max-width: 700px; letter-spacing: -0.01em;
+  }
+  .hero h1 strong { font-weight: 600; color: var(--accent); }
+  .scroll-hint {
+    margin-top: 48px; font-size: 13px; color: var(--muted);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ─── Text Mask Section ─── */
+  .mask-section {
+    position: relative;
+    min-height: 300vh;
+  }
+  .mask-sticky {
+    position: sticky; top: 0;
+    min-height: 100dvh;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Video background */
+  .mask-video {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0.7;
+  }
+
+  /* Overlay that sits ON TOP of video, with text cut out */
+  .mask-overlay {
+    position: absolute; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .mask-text {
+    font-size: clamp(60px, 15vw, 220px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    text-align: center;
+    text-transform: uppercase;
+    /* This is the magic — text punches a hole through the overlay */
+    background: var(--bg);
+    color: transparent;
+    -webkit-text-stroke: 2px rgba(240, 237, 232, 0.15);
+    mix-blend-mode: normal;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* The reveal layer — fills the text with the video */
+  .mask-reveal {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 3;
+    clip-path: inset(100% 0 0 0); /* starts fully clipped from bottom */
+  }
+  .mask-reveal .mask-text-filled {
+    font-size: clamp(60px, 15vw, 220px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    text-align: center;
+    text-transform: uppercase;
+    /* Video shows through text */
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23c8a97e'/%3E%3Cstop offset='50%25' stop-color='%23e8d5b5'/%3E%3Cstop offset='100%25' stop-color='%23a07850'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='400' height='400'/%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: center;
+  }
+
+  /* Subtext that fades in after reveal */
+  .mask-subtext {
+    position: absolute;
+    bottom: 15%;
+    left: 50%; transform: translateX(-50%);
+    text-align: center;
+    opacity: 0;
+    z-index: 4;
+  }
+  .mask-subtext p {
+    font-size: clamp(14px, 1.8vw, 20px);
+    color: var(--muted);
+    max-width: 45ch;
+    line-height: 1.6;
+  }
+  .mask-subtext a {
+    display: inline-block; margin-top: 16px;
+    color: var(--accent); text-decoration: none;
+    font-size: 15px;
+  }
+  .mask-subtext a:hover { text-decoration: underline; }
+  .mask-subtext a::after { content: ' \203A'; }
+
+  /* ─── Explanation Section ─── */
+  .explain {
+    padding: 120px 24px;
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .explain h2 {
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .explain p {
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .explain .tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 400;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(200, 169, 126, 0.2);
+    padding: 4px 12px; border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .fade-up { opacity: 0; transform: translateY(30px); }
+
+  /* ─── Footer ─── */
+  footer {
+    border-top: 1px solid #1a1a1d;
+    padding: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-label">Paradigm 01 — Text Mask Reveal</div>
+  <h1>Scroll to <strong>reveal</strong> the headline through a cinematic text mask</h1>
+  <div class="scroll-hint">Scroll down</div>
+</section>
+
+<section class="mask-section">
+  <div class="mask-sticky">
+    <!-- Animated gradient background (simulating video) -->
+    <div class="mask-video" style="background: linear-gradient(135deg, #1a1208 0%, #2a1f12 30%, #0d0b08 60%, #1a1510 100%); background-size: 400% 400%; animation: shiftBg 8s ease infinite;"></div>
+
+    <!-- Dark overlay with outlined text -->
+    <div class="mask-overlay">
+      <div class="mask-text">BUILT<br>DIFFERENT</div>
+    </div>
+
+    <!-- Reveal layer — clips in on scroll -->
+    <div class="mask-reveal">
+      <div class="mask-text-filled">BUILT<br>DIFFERENT</div>
+    </div>
+
+    <div class="mask-subtext">
+      <p>The text fills with colour as you scroll — forcing visitors to engage with your headline before they see anything else.</p>
+      <a href="#">See the code</a>
+    </div>
+  </div>
+</section>
+
+<section class="explain">
+  <div class="fade-up">
+    <div class="tag">Why it works</div>
+    <h2>Attention through anticipation</h2>
+    <p>The visitor has to scroll to complete the visual. By the time the text is fully revealed, they've already invested attention in your headline. Apple, Nike, and Stripe all use variants of this pattern.</p>
+  </div>
+</section>
+
+<section class="explain">
+  <div class="fade-up">
+    <div class="tag">Implementation</div>
+    <h2>CSS background-clip + GSAP</h2>
+    <p>The text uses background-clip: text to punch through to the layer below. GSAP ScrollTrigger animates a clip-path that reveals the filled version over the outlined version. Zero frameworks. One HTML file.</p>
+  </div>
+</section>
+
+<footer>Paradigm Demo — Text Mask Reveal</footer>
+
+<script>
+(function() {
+  gsap.registerPlugin(ScrollTrigger);
+  var section = document.querySelector('.mask-section');
+
+  // Animate clip-path on the reveal layer: inset(100% 0 0 0) → inset(0% 0 0 0)
+  gsap.to('.mask-reveal', {
+    clipPath: 'inset(0% 0 0 0)',
+    ease: 'none',
+    scrollTrigger: {
+      trigger: section,
+      start: 'top top',
+      end: '60% bottom',
+      scrub: 0.3,
+      pin: false
+    }
+  });
+
+  // Fade in subtext after reveal completes
+  gsap.to('.mask-subtext', {
+    opacity: 1, y: 0,
+    scrollTrigger: {
+      trigger: section,
+      start: '55% top',
+      end: '70% top',
+      scrub: true
+    }
+  });
+
+  // Fade up sections
+  gsap.utils.toArray('.fade-up').forEach(function(el) {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.8, ease: 'power2.out',
+      scrollTrigger: { trigger: el, start: 'top 85%' }
+    });
+  });
+})();
+</script>
+
+<style>
+  @keyframes shiftBg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+</style>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

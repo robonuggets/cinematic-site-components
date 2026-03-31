@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sticky Card Stack — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root { --bg: #f5f3ef; --surface: #ffffff; --text: #1a1a1f; --muted: #6b6b73; --border: #e0ddd8; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+  .hero {
+    min-height: 100dvh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 40px 24px;
+  }
+  .hero-label { font-size: 12px; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+  .hero h1 { font-size: clamp(32px, 6vw, 64px); font-weight: 600; line-height: 1.15; max-width: 700px; letter-spacing: -0.025em; }
+  .hero p { margin-top: 16px; font-size: 18px; color: var(--muted); max-width: 50ch; line-height: 1.5; }
+  .scroll-hint { margin-top: 48px; font-size: 13px; color: var(--muted); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ─── Sticky Cards ─── */
+  .cards-section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px 200px;
+  }
+  .cards-section-label {
+    text-align: center; font-size: 12px; font-weight: 400;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 32px; padding-top: 20px;
+  }
+
+  .stack-card {
+    position: sticky;
+    top: 100px;
+    border-radius: 24px;
+    padding: 48px 40px;
+    margin-bottom: 32px;
+    min-height: 320px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+    transition: transform 0.1s ease;
+    will-change: transform;
+  }
+
+  /* Each card gets a slightly different top offset so they peek out */
+  .stack-card:nth-child(1) { top: 80px; background: #1a1a1f; color: #eae7e2; z-index: 1; }
+  .stack-card:nth-child(2) { top: 100px; background: #2d4a3e; color: #e8f0ec; z-index: 2; }
+  .stack-card:nth-child(3) { top: 120px; background: #4a3a2d; color: #f0ece8; z-index: 3; }
+  .stack-card:nth-child(4) { top: 140px; background: #2d3a4a; color: #e8ecf0; z-index: 4; }
+  .stack-card:nth-child(5) { top: 160px; background: var(--surface); color: var(--text); border: 1px solid var(--border); z-index: 5; }
+
+  .stack-card .card-num {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    opacity: 0.5; margin-bottom: 16px; font-weight: 400;
+  }
+  .stack-card h3 {
+    font-size: clamp(24px, 4vw, 36px); font-weight: 600;
+    letter-spacing: -0.02em; margin-bottom: 12px; line-height: 1.15;
+  }
+  .stack-card p {
+    font-size: 16px; opacity: 0.7; line-height: 1.6; max-width: 50ch;
+  }
+
+  /* ─── Explanation ─── */
+  .explain { padding: 120px 24px; text-align: center; max-width: 680px; margin: 0 auto; border-top: 1px solid var(--border); }
+  .explain .tag { display: inline-block; font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: #4a3a2d; border: 1px solid rgba(74,58,45,0.15); padding: 4px 12px; border-radius: 100px; margin-bottom: 20px; }
+  .explain h2 { font-size: clamp(24px, 4vw, 40px); font-weight: 600; letter-spacing: -0.02em; margin-bottom: 16px; }
+  .explain p { font-size: 17px; color: var(--muted); line-height: 1.6; }
+  footer { border-top: 1px solid var(--border); padding: 24px; text-align: center; font-size: 12px; color: var(--muted); }
+
+  @media (max-width: 768px) {
+    .stack-card { padding: 32px 24px; min-height: 260px; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-label">Paradigm 07 — Sticky Card Stack</div>
+  <h1>Cards stack on top of each other as you scroll</h1>
+  <p>Each card pins in place, then the next one slides over it. Creates a physical sense of layers building up — like dealing cards onto a table.</p>
+  <div class="scroll-hint">Scroll down</div>
+</section>
+
+<section class="cards-section">
+  <div class="cards-section-label">Our process</div>
+
+  <div class="stack-card">
+    <div class="card-num">Step 01</div>
+    <h3>Discovery</h3>
+    <p>We sit with you for a full day. No slides, no pitches. Just questions. We need to understand your customers, your constraints, and where the real opportunity is before we touch a single pixel.</p>
+  </div>
+
+  <div class="stack-card">
+    <div class="card-num">Step 02</div>
+    <h3>Architecture</h3>
+    <p>Information architecture, user flows, and wireframes. We map every screen, every edge case, every error state. The structure has to be right before we add a drop of colour.</p>
+  </div>
+
+  <div class="stack-card">
+    <div class="card-num">Step 03</div>
+    <h3>Visual design</h3>
+    <p>Moodboards, type pairings, and a component library built to scale. We design in the browser, not in Figma. What you review is what ships.</p>
+  </div>
+
+  <div class="stack-card">
+    <div class="card-num">Step 04</div>
+    <h3>Development</h3>
+    <p>TypeScript, server components, edge-deployed. Every interaction is hardware-accelerated, every image is optimised, every route is pre-rendered. Performance is a feature.</p>
+  </div>
+
+  <div class="stack-card">
+    <div class="card-num">Step 05</div>
+    <h3>Launch and iterate</h3>
+    <p>We don't disappear after launch. Analytics, heatmaps, and fortnightly sprints. The first version is the starting line, not the finish.</p>
+  </div>
+</section>
+
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Physical weight creates trust</h2>
+  <p>Each card landing on the stack feels substantial — like turning pages in a book. The visitor processes one idea at a time instead of skimming past a wall of text. Agency process sections, pricing tiers, and case study timelines all benefit from this pattern. Pure CSS sticky positioning — no JavaScript required for the core effect.</p>
+</section>
+
+<footer>Paradigm Demo — Sticky Card Stack</footer>
+
+<script>
+(function() {
+  // Optional: slight scale-down on older cards as new ones cover them
+  gsap.registerPlugin(ScrollTrigger);
+  var cards = document.querySelectorAll('.stack-card');
+  cards.forEach(function(card, i) {
+    if (i < cards.length - 1) {
+      gsap.to(card, {
+        scale: 0.95,
+        opacity: 0.6,
+        scrollTrigger: {
+          trigger: cards[i + 1],
+          start: 'top 80%',
+          end: 'top 20%',
+          scrub: true
+        }
+      });
+    }
+  });
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

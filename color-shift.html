@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll Color Shift — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;background:#0a0a0b;color:#eae7e2;transition:background .8s,color .8s}
+  .section{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px}
+  .section-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;opacity:.5;margin-bottom:20px}
+  .section h2{font-size:clamp(32px,6vw,64px);font-weight:600;letter-spacing:-.025em;line-height:1.15;max-width:700px;margin-bottom:12px}
+  .section p{font-size:18px;opacity:.6;max-width:50ch;line-height:1.5}
+  .color-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin:0 4px;vertical-align:middle;border:1px solid rgba(128,128,128,.3)}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid rgba(128,128,128,.2)}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.5;border:1px solid rgba(128,128,128,.2);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;opacity:.6;line-height:1.6}
+  footer{border-top:1px solid rgba(128,128,128,.2);padding:24px;text-align:center;font-size:12px;opacity:.5}
+</style>
+</head>
+<body>
+<section class="section" data-bg="#0a0a0b" data-text="#eae7e2">
+  <div class="section-label">Paradigm 20 — Scroll Color Shift</div>
+  <h2>The page changes colour as you scroll</h2>
+  <p>Background and text transition smoothly between palettes as each section enters view. Creates distinct moods for each chapter of your story.</p>
+</section>
+<section class="section" data-bg="#1a0d08" data-text="#f0e8df">
+  <div class="section-label">Warm</div>
+  <h2>Chapter one <span class="color-dot" style="background:#c8a97e"></span></h2>
+  <p>A warm amber palette signals craft, heritage, and trust. Bakeries, jewellers, and luxury brands feel at home here.</p>
+</section>
+<section class="section" data-bg="#081a12" data-text="#dff0e8">
+  <div class="section-label">Forest</div>
+  <h2>Chapter two <span class="color-dot" style="background:#4ca879"></span></h2>
+  <p>Deep green communicates growth, health, and sustainability. Fintech, wellness, and environmental brands gravitate here.</p>
+</section>
+<section class="section" data-bg="#0d081a" data-text="#e0dff0">
+  <div class="section-label">Night</div>
+  <h2>Chapter three <span class="color-dot" style="background:#7b68ee"></span></h2>
+  <p>Cool violet carries creativity, innovation, and premium tech. SaaS, AI products, and creative studios own this space.</p>
+</section>
+<section class="section" data-bg="#f5f3ef" data-text="#1a1a1f">
+  <div class="section-label">Light</div>
+  <h2>Chapter four <span class="color-dot" style="background:#1a1a1f"></span></h2>
+  <p>Flipping to light mode mid-page is a power move. It resets attention and signals a shift in tone — from storytelling to action.</p>
+</section>
+<section class="section" data-bg="#0a0a0b" data-text="#eae7e2">
+  <div class="section-label">Return</div>
+  <h2>Back to dark</h2>
+  <p>Returning to the original palette closes the loop. The visitor feels a complete journey, not a random collection of sections.</p>
+</section>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Mood per chapter</h2>
+  <p>Colour is the fastest way to change emotional context. Each section becomes its own world with its own feeling. Long-form brand pages, annual reports, and multi-product sites use this to tell stories with distinct chapters without breaking the single-page flow.</p>
+</section>
+<footer>Paradigm Demo — Scroll Color Shift</footer>
+<script>
+(function(){
+  gsap.registerPlugin(ScrollTrigger);
+  document.querySelectorAll('.section[data-bg]').forEach(function(s){
+    ScrollTrigger.create({
+      trigger:s,start:'top 60%',end:'bottom 40%',
+      onEnter:function(){document.body.style.background=s.dataset.bg;document.body.style.color=s.dataset.text},
+      onEnterBack:function(){document.body.style.background=s.dataset.bg;document.body.style.color=s.dataset.text}
+    });
+  });
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

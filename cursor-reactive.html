@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursor-Reactive Environment — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08080a;
+    --text: #eae7e2;
+    --muted: #5a5a5e;
+    --accent: #4f8fff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ─── Hero ─── */
+  .hero {
+    min-height: 100dvh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 24px;
+    position: relative; overflow: hidden;
+  }
+  .hero-label {
+    font-size: 12px; font-weight: 400; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
+    position: relative; z-index: 2;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 6vw, 64px); font-weight: 600;
+    line-height: 1.15; max-width: 700px; letter-spacing: -0.025em;
+    position: relative; z-index: 2;
+  }
+  .hero p {
+    margin-top: 16px; font-size: 18px; color: var(--muted);
+    max-width: 50ch; line-height: 1.5;
+    position: relative; z-index: 2;
+  }
+
+  /* ─── Cursor Glow (follows mouse) ─── */
+  .cursor-glow {
+    position: fixed;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(79, 143, 255, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s;
+    will-change: transform;
+  }
+
+  /* ─── Tilt Cards Section ─── */
+  .cards-section {
+    padding: 80px 24px 120px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .cards-section-label {
+    text-align: center;
+    font-size: 12px; font-weight: 400; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 48px;
+  }
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .tilt-card {
+    background: #111114;
+    border: 1px solid #1e1e22;
+    border-radius: 20px;
+    padding: 48px 36px;
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease-out, border-color 0.3s;
+    will-change: transform;
+    cursor: default;
+  }
+  .tilt-card:hover {
+    border-color: #2a2a30;
+  }
+
+  /* Spotlight border effect */
+  .tilt-card .spotlight {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 20px;
+  }
+  .tilt-card:hover .spotlight { opacity: 1; }
+
+  .tilt-card .icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: rgba(79, 143, 255, 0.1);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: var(--accent);
+  }
+  .tilt-card h3 {
+    font-size: 20px; font-weight: 600;
+    letter-spacing: -0.01em; margin-bottom: 10px;
+  }
+  .tilt-card p {
+    font-size: 14px; color: var(--muted); line-height: 1.6;
+  }
+
+  /* ─── Magnetic Button Section ─── */
+  .magnet-section {
+    padding: 120px 24px;
+    text-align: center;
+  }
+  .magnet-section h2 {
+    font-size: clamp(24px, 4vw, 40px); font-weight: 600;
+    letter-spacing: -0.02em; margin-bottom: 12px;
+  }
+  .magnet-section p {
+    font-size: 17px; color: var(--muted); margin-bottom: 40px;
+  }
+  .magnetic-btn {
+    display: inline-block;
+    padding: 16px 48px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px; font-weight: 500;
+    border: none; border-radius: 14px;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s;
+    will-change: transform;
+  }
+  .magnetic-btn:hover {
+    box-shadow: 0 12px 40px rgba(79, 143, 255, 0.25);
+  }
+  .magnetic-btn:active {
+    transform: scale(0.97) !important;
+  }
+
+  /* ─── Ripple Section ─── */
+  .ripple-section {
+    padding: 120px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 60vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .ripple-section h2 {
+    font-size: clamp(24px, 4vw, 40px); font-weight: 600;
+    letter-spacing: -0.02em; margin-bottom: 12px;
+    position: relative; z-index: 2;
+  }
+  .ripple-section p {
+    font-size: 17px; color: var(--muted);
+    position: relative; z-index: 2;
+  }
+  .ripple-canvas {
+    position: absolute; inset: 0; z-index: 1;
+  }
+
+  /* ─── Explanation ─── */
+  .explain {
+    padding: 120px 24px;
+    text-align: center; max-width: 680px; margin: 0 auto;
+    border-top: 1px solid #1a1a1d;
+  }
+  .explain .tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 400;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(79, 143, 255, 0.15);
+    padding: 4px 12px; border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .explain h2 {
+    font-size: clamp(24px, 4vw, 40px); font-weight: 600;
+    letter-spacing: -0.02em; margin-bottom: 16px;
+  }
+  .explain p { font-size: 17px; color: var(--muted); line-height: 1.6; }
+
+  footer {
+    border-top: 1px solid #1a1a1d;
+    padding: 24px; text-align: center;
+    font-size: 12px; color: var(--muted);
+  }
+
+  @media (max-width: 768px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .cursor-glow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor glow -->
+<div class="cursor-glow" id="glow"></div>
+
+<section class="hero">
+  <div class="hero-label">Paradigm 04 — Cursor-Reactive Environment</div>
+  <h1>Move your mouse.<br>The page follows.</h1>
+  <p>Cursor glow, 3D card tilt, magnetic buttons, and click ripples. The page feels alive without being gimmicky.</p>
+</section>
+
+<!-- Tilt Cards -->
+<section class="cards-section">
+  <div class="cards-section-label">3D Tilt Cards — hover over them</div>
+  <div class="cards-grid">
+    <div class="tilt-card">
+      <div class="spotlight"></div>
+      <div class="icon">&#9672;</div>
+      <h3>Real-time sync</h3>
+      <p>Changes propagate across devices in under 200ms. No refresh, no delay. Just instant sync.</p>
+    </div>
+    <div class="tilt-card">
+      <div class="spotlight"></div>
+      <div class="icon">&#9670;</div>
+      <h3>Pixel-perfect exports</h3>
+      <p>Export to PDF, PNG, or SVG with exact colour fidelity. What you see is exactly what they get.</p>
+    </div>
+    <div class="tilt-card">
+      <div class="spotlight"></div>
+      <div class="icon">&#9674;</div>
+      <h3>Branching workflows</h3>
+      <p>Fork any project into parallel branches. Merge when ready. Git-style versioning for design.</p>
+    </div>
+    <div class="tilt-card">
+      <div class="spotlight"></div>
+      <div class="icon">&#9676;</div>
+      <h3>Zero-config deploy</h3>
+      <p>Push to production in one click. SSL, CDN, and custom domains handled automatically.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Magnetic Button -->
+<section class="magnet-section">
+  <h2>Magnetic button</h2>
+  <p>The button pulls toward your cursor. Try it.</p>
+  <button class="magnetic-btn" id="magnetBtn">Get started</button>
+</section>
+
+<!-- Ripple Click -->
+<section class="ripple-section" id="rippleArea">
+  <canvas class="ripple-canvas" id="rippleCanvas"></canvas>
+  <h2>Click anywhere in this section</h2>
+  <p>Ripples expand from the exact click coordinates.</p>
+</section>
+
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Makes visitors explore</h2>
+  <p>Cursor-reactive elements trigger curiosity. Visitors unconsciously move their mouse more, hover over cards, click around. Time on page goes up. The interactivity signals craft and technical sophistication without any loading cost.</p>
+</section>
+
+<footer>Paradigm Demo — Cursor-Reactive Environment</footer>
+
+<script>
+(function() {
+  // ─── 1. Cursor Glow ───
+  var glow = document.getElementById('glow');
+  var mx = 0, my = 0, gx = 0, gy = 0;
+
+  document.addEventListener('mousemove', function(e) {
+    mx = e.clientX; my = e.clientY;
+  });
+
+  function moveGlow() {
+    gx += (mx - gx) * 0.12;
+    gy += (my - gy) * 0.12;
+    glow.style.transform = 'translate(' + (gx - 250) + 'px,' + (gy - 250) + 'px)';
+    requestAnimationFrame(moveGlow);
+  }
+  moveGlow();
+
+  // ─── 2. 3D Tilt Cards ───
+  var cards = document.querySelectorAll('.tilt-card');
+  cards.forEach(function(card) {
+    card.addEventListener('mousemove', function(e) {
+      var rect = card.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = 'perspective(600px) rotateY(' + (x * 12) + 'deg) rotateX(' + (-y * 12) + 'deg) scale(1.02)';
+
+      // Spotlight gradient follows cursor
+      var spot = card.querySelector('.spotlight');
+      spot.style.background = 'radial-gradient(circle at ' + (e.clientX - rect.left) + 'px ' + (e.clientY - rect.top) + 'px, rgba(79,143,255,0.06) 0%, transparent 60%)';
+    });
+    card.addEventListener('mouseleave', function() {
+      card.style.transform = 'perspective(600px) rotateY(0deg) rotateX(0deg) scale(1)';
+    });
+  });
+
+  // ─── 3. Magnetic Button ───
+  var btn = document.getElementById('magnetBtn');
+  var bx = 0, by = 0;
+
+  btn.addEventListener('mousemove', function(e) {
+    var rect = btn.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top + rect.height / 2;
+    bx = (e.clientX - cx) * 0.3;
+    by = (e.clientY - cy) * 0.3;
+    btn.style.transform = 'translate(' + bx + 'px,' + by + 'px)';
+  });
+  btn.addEventListener('mouseleave', function() {
+    btn.style.transform = 'translate(0,0)';
+  });
+
+  // ─── 4. Click Ripples ───
+  var rippleCanvas = document.getElementById('rippleCanvas');
+  var rctx = rippleCanvas.getContext('2d');
+  var ripples = [];
+  var rippleArea = document.getElementById('rippleArea');
+
+  function resizeRipple() {
+    rippleCanvas.width = rippleArea.offsetWidth;
+    rippleCanvas.height = rippleArea.offsetHeight;
+  }
+  resizeRipple();
+  window.addEventListener('resize', resizeRipple);
+
+  rippleArea.addEventListener('click', function(e) {
+    var rect = rippleArea.getBoundingClientRect();
+    ripples.push({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+      r: 0,
+      alpha: 0.5
+    });
+  });
+
+  function drawRipples() {
+    rctx.clearRect(0, 0, rippleCanvas.width, rippleCanvas.height);
+    for (var i = ripples.length - 1; i >= 0; i--) {
+      var rip = ripples[i];
+      rip.r += 4;
+      rip.alpha -= 0.006;
+      if (rip.alpha <= 0) { ripples.splice(i, 1); continue; }
+      rctx.beginPath();
+      rctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
+      rctx.strokeStyle = 'rgba(79, 143, 255, ' + rip.alpha + ')';
+      rctx.lineWidth = 1.5;
+      rctx.stroke();
+    }
+    requestAnimationFrame(drawRipples);
+  }
+  drawRipples();
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

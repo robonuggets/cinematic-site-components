@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kinetic Marquee — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root { --bg: #fafaf8; --text: #1a1a1f; --muted: #6b6b73; --accent: #1a1a1f; --border: #e5e5ea; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+  .hero {
+    min-height: 100dvh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 40px 24px;
+  }
+  .hero-label { font-size: 12px; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+  .hero h1 { font-size: clamp(32px, 6vw, 64px); font-weight: 600; line-height: 1.15; max-width: 700px; letter-spacing: -0.025em; }
+  .hero p { margin-top: 16px; font-size: 18px; color: var(--muted); max-width: 50ch; line-height: 1.5; }
+  .scroll-hint { margin-top: 48px; font-size: 13px; color: var(--muted); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ─── Marquee ─── */
+  .marquee-section {
+    padding: 60px 0;
+    overflow: hidden;
+  }
+  .marquee-label {
+    text-align: center; font-size: 12px; font-weight: 400;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 40px; padding: 0 24px;
+  }
+
+  .marquee-row {
+    display: flex;
+    white-space: nowrap;
+    will-change: transform;
+    padding: 12px 0;
+  }
+  .marquee-row + .marquee-row { margin-top: 4px; }
+
+  .marquee-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 32px;
+    flex-shrink: 0;
+  }
+
+  /* Style 1: Giant display text */
+  .marquee-giant .marquee-item {
+    font-size: clamp(48px, 10vw, 120px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--text);
+    padding: 0 40px;
+  }
+  .marquee-giant .marquee-item .dot {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--muted);
+    margin: 0 32px;
+    opacity: 0.3;
+  }
+
+  /* Style 2: Outlined text */
+  .marquee-outline .marquee-item {
+    font-size: clamp(48px, 10vw, 120px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--text);
+    padding: 0 40px;
+  }
+  .marquee-outline .marquee-item .dot {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--text);
+    margin: 0 32px;
+  }
+
+  /* Style 3: Tag pills */
+  .marquee-tags .marquee-item {
+    font-size: 15px;
+    font-weight: 500;
+    background: var(--text);
+    color: var(--bg);
+    padding: 10px 24px;
+    border-radius: 100px;
+    margin: 0 8px;
+  }
+  .marquee-tags-outline .marquee-item {
+    font-size: 15px;
+    font-weight: 500;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 10px 24px;
+    border-radius: 100px;
+    margin: 0 8px;
+  }
+
+  /* Style 4: Dark band */
+  .marquee-dark {
+    background: var(--text);
+    padding: 20px 0;
+    margin: 40px 0;
+  }
+  .marquee-dark .marquee-item {
+    font-size: clamp(24px, 5vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--bg);
+    padding: 0 32px;
+  }
+  .marquee-dark .marquee-item .sep {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: rgba(250,250,248,0.3);
+    border-radius: 2px;
+    margin: 0 24px;
+    transform: rotate(45deg);
+  }
+
+  /* Scroll speed indicator */
+  .speed-indicator {
+    text-align: center;
+    padding: 60px 24px;
+  }
+  .speed-indicator p {
+    font-size: 15px; color: var(--muted);
+    max-width: 45ch; margin: 0 auto; line-height: 1.6;
+  }
+  .speed-indicator .speed-bar {
+    width: 200px; height: 3px; background: var(--border);
+    border-radius: 2px; margin: 16px auto 0; overflow: hidden;
+  }
+  .speed-indicator .speed-fill {
+    height: 100%; width: 20%; background: var(--text);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  .explain { padding: 120px 24px; text-align: center; max-width: 680px; margin: 0 auto; border-top: 1px solid var(--border); }
+  .explain .tag { display: inline-block; font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--border); padding: 4px 12px; border-radius: 100px; margin-bottom: 20px; }
+  .explain h2 { font-size: clamp(24px, 4vw, 40px); font-weight: 600; letter-spacing: -0.02em; margin-bottom: 16px; }
+  .explain p { font-size: 17px; color: var(--muted); line-height: 1.6; }
+  footer { border-top: 1px solid var(--border); padding: 24px; text-align: center; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-label">Paradigm 10 — Kinetic Marquee</div>
+  <h1>Text bands that scroll, react, and never stop</h1>
+  <p>Infinite horizontal text marquees that speed up, slow down, or reverse direction based on scroll velocity. Five visual variants shown below.</p>
+  <div class="scroll-hint">Scroll down</div>
+</section>
+
+<!-- Giant filled text -->
+<section class="marquee-section">
+  <div class="marquee-label">Giant display — scroll to accelerate</div>
+  <div class="marquee-row marquee-giant" data-speed="1" data-direction="left">
+    <div class="marquee-content">
+      <span class="marquee-item">DESIGN<span class="dot"></span></span>
+      <span class="marquee-item">BUILD<span class="dot"></span></span>
+      <span class="marquee-item">SHIP<span class="dot"></span></span>
+      <span class="marquee-item">SCALE<span class="dot"></span></span>
+    </div>
+  </div>
+  <div class="marquee-row marquee-outline" data-speed="0.7" data-direction="right">
+    <div class="marquee-content">
+      <span class="marquee-item">DESIGN<span class="dot"></span></span>
+      <span class="marquee-item">BUILD<span class="dot"></span></span>
+      <span class="marquee-item">SHIP<span class="dot"></span></span>
+      <span class="marquee-item">SCALE<span class="dot"></span></span>
+    </div>
+  </div>
+</section>
+
+<!-- Tag pills -->
+<section class="marquee-section">
+  <div class="marquee-label">Tag pills — opposite directions</div>
+  <div class="marquee-row marquee-tags" data-speed="0.5" data-direction="left">
+    <div class="marquee-content">
+      <span class="marquee-item">React</span>
+      <span class="marquee-item">TypeScript</span>
+      <span class="marquee-item">Next.js</span>
+      <span class="marquee-item">Tailwind</span>
+      <span class="marquee-item">GSAP</span>
+      <span class="marquee-item">Framer Motion</span>
+      <span class="marquee-item">Vercel</span>
+      <span class="marquee-item">Supabase</span>
+    </div>
+  </div>
+  <div class="marquee-row marquee-tags-outline" data-speed="0.4" data-direction="right">
+    <div class="marquee-content">
+      <span class="marquee-item">Figma</span>
+      <span class="marquee-item">Webflow</span>
+      <span class="marquee-item">Three.js</span>
+      <span class="marquee-item">PostgreSQL</span>
+      <span class="marquee-item">Redis</span>
+      <span class="marquee-item">Stripe</span>
+      <span class="marquee-item">Resend</span>
+      <span class="marquee-item">Cloudflare</span>
+    </div>
+  </div>
+</section>
+
+<!-- Dark band -->
+<div class="marquee-dark">
+  <div class="marquee-row" data-speed="0.8" data-direction="left">
+    <div class="marquee-content">
+      <span class="marquee-item">WEBSITES<span class="sep"></span></span>
+      <span class="marquee-item">APPS<span class="sep"></span></span>
+      <span class="marquee-item">DASHBOARDS<span class="sep"></span></span>
+      <span class="marquee-item">PLATFORMS<span class="sep"></span></span>
+      <span class="marquee-item">TOOLS<span class="sep"></span></span>
+    </div>
+  </div>
+</div>
+
+<div class="speed-indicator">
+  <p>Scroll faster to accelerate the marquees. The bands react to your scroll velocity in real-time.</p>
+  <div class="speed-bar"><div class="speed-fill" id="speedFill"></div></div>
+</div>
+
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Energy without effort</h2>
+  <p>Marquees fill horizontal space that headlines can't. They create ambient motion that makes a page feel dynamic even when the visitor isn't interacting. The scroll-reactive speed adds a tactile layer — the page responds to how fast you're scrolling, which feels alive. Client logos, tech stacks, service lists, and brand statements all work here. Used heavily by agencies, portfolios, and SaaS landing pages.</p>
+</section>
+
+<footer>Paradigm Demo — Kinetic Marquee</footer>
+
+<script>
+(function() {
+  // Clone content for seamless loop
+  document.querySelectorAll('.marquee-row').forEach(function(row) {
+    var content = row.querySelector('.marquee-content');
+    var clone = content.cloneNode(true);
+    row.appendChild(clone);
+  });
+
+  // Marquee animation with scroll-reactive speed
+  gsap.registerPlugin(ScrollTrigger);
+  var rows = document.querySelectorAll('.marquee-row');
+  var baseSpeed = 80; // px per second
+  var scrollVelocity = 0;
+  var speedFill = document.getElementById('speedFill');
+
+  // Track scroll velocity
+  ScrollTrigger.create({
+    onUpdate: function(self) {
+      scrollVelocity = Math.abs(self.getVelocity());
+    }
+  });
+
+  // Animate each row
+  rows.forEach(function(row) {
+    var content = row.querySelector('.marquee-content');
+    var direction = row.dataset.direction === 'right' ? 1 : -1;
+    var speedMult = parseFloat(row.dataset.speed) || 1;
+    var contentWidth = content.offsetWidth;
+    var x = direction === -1 ? 0 : -contentWidth;
+
+    function animate() {
+      var speed = (baseSpeed + scrollVelocity * 0.15) * speedMult;
+      x += direction * -1 * speed / 60; // 60fps
+
+      // Reset seamlessly
+      if (direction === -1 && x <= -contentWidth) x += contentWidth;
+      if (direction === 1 && x >= 0) x -= contentWidth;
+
+      row.style.transform = 'translateX(' + x + 'px)';
+
+      // Update speed indicator
+      var fillW = Math.min(20 + scrollVelocity * 0.02, 100);
+      speedFill.style.width = fillW + '%';
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  });
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

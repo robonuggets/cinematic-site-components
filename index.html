@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinematic Sites Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#09090b;--surface:#111114;--surface2:#161619;--text:#eae7e2;--muted:#5a5a5e;--border:#1e1e22;--accent:#e8793a;--r:16px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+  /* ─── Header ─── */
+  .header{padding:80px 24px 60px;text-align:center;max-width:700px;margin:0 auto}
+  .header .label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .header h1{font-size:clamp(32px,5.5vw,56px);font-weight:700;letter-spacing:-.03em;line-height:1.08;margin-bottom:12px}
+  .header h1 span{background:linear-gradient(135deg,#e8793a,#f5a623);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .header p{font-size:17px;color:var(--muted);line-height:1.5}
+
+  /* ─── Section ─── */
+  .section{max-width:1200px;margin:0 auto 64px;padding:0 24px}
+  .section-head{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+  .section-dot{width:8px;height:8px;border-radius:50%}
+  .section-title{font-size:13px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .section-count{font-size:11px;color:var(--muted);opacity:.5;margin-left:auto}
+
+  /* ─── Bento Grid ─── */
+  .bento{display:grid;gap:12px}
+  .bento-scroll{grid-template-columns:repeat(4,1fr);grid-auto-rows:200px}
+  .bento-cursor{grid-template-columns:repeat(4,1fr);grid-auto-rows:200px}
+  .bento-click{grid-template-columns:repeat(4,1fr);grid-auto-rows:200px}
+  .bento-ambient{grid-template-columns:repeat(4,1fr);grid-auto-rows:200px}
+
+  /* Span classes */
+  .span-2c{grid-column:span 2}
+  .span-2r{grid-row:span 2}
+  .span-2c2r{grid-column:span 2;grid-row:span 2}
+
+  /* ─── Card ─── */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;text-decoration:none;color:var(--text);display:flex;flex-direction:column;position:relative;transition:border-color .3s,transform .3s cubic-bezier(.16,1,.3,1)}
+  .card:hover{border-color:#2a2a30;transform:translateY(-2px)}
+  .card:active{transform:scale(.98)}
+
+  /* Mini demo area */
+  .card-demo{flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+
+  /* Card info */
+  .card-info{padding:14px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .card-num{font-size:10px;letter-spacing:.1em;color:var(--muted);opacity:.5}
+  .card-name{font-size:13px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card-arrow{margin-left:auto;font-size:12px;color:var(--muted);opacity:.4}
+
+  /* ─── Mini Animations ─── */
+
+  /* Text Mask */
+  .mini-mask{font-size:36px;font-weight:800;letter-spacing:-.03em;color:transparent;-webkit-text-stroke:1px rgba(234,231,226,.15)}.mini-mask-fill{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,#c8a97e,#e85d3a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;clip-path:inset(100% 0 0 0);animation:maskUp 3s ease infinite}
+  @keyframes maskUp{0%{clip-path:inset(100% 0 0 0)}40%,60%{clip-path:inset(0)}100%{clip-path:inset(100% 0 0 0)}}
+
+  /* Sticky Stack */
+  .mini-stack{position:relative;width:60%;height:70%}.mini-stack-card{position:absolute;left:0;right:0;height:40px;border-radius:8px;animation:stackSlide 4s ease infinite}
+  .mini-stack-card:nth-child(1){background:#2d4a3e;bottom:0;animation-delay:0s}
+  .mini-stack-card:nth-child(2){background:#4a3a2d;bottom:0;animation-delay:1s}
+  .mini-stack-card:nth-child(3){background:#2d3a4a;bottom:0;animation-delay:2s}
+  @keyframes stackSlide{0%{transform:translateY(60px);opacity:0}20%,80%{transform:translateY(0);opacity:1}100%{transform:translateY(-10px) scale(.95);opacity:.5}}
+
+  /* Zoom Parallax */
+  .mini-zoom{font-size:40px;font-weight:800;letter-spacing:-.04em;color:rgba(234,231,226,.3);animation:zoomPulse 3s ease infinite}
+  @keyframes zoomPulse{0%{transform:scale(1);opacity:.3}50%{transform:scale(2.5);opacity:0}51%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:.3}}
+
+  /* Horizontal Scroll */
+  .mini-hscroll{display:flex;gap:8px;animation:hslide 4s linear infinite}.mini-hcard{width:40px;height:56px;border-radius:6px;flex-shrink:0}
+  @keyframes hslide{0%{transform:translateX(40px)}100%{transform:translateX(-120px)}}
+
+  /* Sticky Cards */
+  .mini-stickyc{width:60px;height:40px;border-radius:8px;position:absolute;animation:stickyDrop 3s ease infinite}
+  .mini-stickyc:nth-child(1){background:#1a1a1f;animation-delay:0s}
+  .mini-stickyc:nth-child(2){background:#2d4a3e;animation-delay:.6s}
+  .mini-stickyc:nth-child(3){background:#4a3a2d;animation-delay:1.2s}
+  @keyframes stickyDrop{0%{transform:translateY(-30px);opacity:0}20%{transform:translateY(0);opacity:1}80%{opacity:1}100%{transform:scale(.92);opacity:.4}}
+
+  /* SVG Draw */
+  .mini-svg-line{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:200;stroke-dashoffset:200;animation:drawLine 3s ease infinite}
+  @keyframes drawLine{0%{stroke-dashoffset:200}50%{stroke-dashoffset:0}100%{stroke-dashoffset:200}}
+
+  /* Curtain */
+  .mini-curtain{display:flex;width:100%;height:100%;position:absolute;inset:0}
+  .mini-curtain-l,.mini-curtain-r{flex:1;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
+  .mini-curtain-l{background:var(--surface);animation:curtL 4s ease infinite;transform-origin:left}
+  .mini-curtain-r{background:var(--surface);animation:curtR 4s ease infinite;transform-origin:right}
+  @keyframes curtL{0%,20%{transform:translateX(0)}50%,70%{transform:translateX(-100%)}100%{transform:translateX(0)}}
+  @keyframes curtR{0%,20%{transform:translateX(0)}50%,70%{transform:translateX(100%)}100%{transform:translateX(0)}}
+  .mini-curtain-bg{position:absolute;inset:0;background:linear-gradient(135deg,#1a120a,#0d0a08);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--accent)}
+
+  /* Split Scroll */
+  .mini-split{display:flex;width:80%;height:70%;gap:2px;overflow:hidden}
+  .mini-split-col{flex:1;display:flex;flex-direction:column;gap:4px}
+  .mini-split-item{height:28px;border-radius:4px;flex-shrink:0}
+  .mini-split-col:first-child{animation:splitDown 3s linear infinite}
+  .mini-split-col:last-child{animation:splitUp 3s linear infinite}
+  @keyframes splitDown{0%{transform:translateY(0)}100%{transform:translateY(-60px)}}
+  @keyframes splitUp{0%{transform:translateY(-60px)}100%{transform:translateY(0)}}
+
+  /* Color Shift */
+  .mini-colorshift{width:60%;height:60%;border-radius:10px;animation:colorCycle 6s ease infinite}
+  @keyframes colorCycle{0%{background:#1a0d08}25%{background:#081a12}50%{background:#0d081a}75%{background:#f5f3ef}100%{background:#1a0d08}}
+
+  /* Cursor Glow */
+  .mini-glow{width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(79,143,255,.25),transparent 70%);animation:glowFloat 3s ease infinite}
+  @keyframes glowFloat{0%,100%{transform:translate(-15px,-10px)}50%{transform:translate(15px,10px)}}
+
+  /* View Transition */
+  .mini-morph{width:50px;height:50px;border-radius:12px;background:var(--accent);animation:morphShape 4s ease infinite}
+  @keyframes morphShape{0%,100%{border-radius:12px;width:50px;height:50px}50%{border-radius:20px;width:120px;height:80px}}
+
+  /* Accordion */
+  .mini-acc{display:flex;gap:3px;height:60%;width:80%}
+  .mini-acc-panel{flex:1;border-radius:6px;transition:flex .5s cubic-bezier(.16,1,.3,1)}
+  .mini-acc:hover .mini-acc-panel:nth-child(2){flex:3}
+
+  /* Cursor Reveal */
+  .mini-reveal{width:80%;height:70%;border-radius:8px;position:relative;overflow:hidden}
+  .mini-reveal-a{position:absolute;inset:0;background:linear-gradient(135deg,#2a1a10,#1a0d08)}
+  .mini-reveal-b{position:absolute;inset:0;background:linear-gradient(135deg,#1a2a1e,#0d1a10);clip-path:inset(0 50% 0 0);animation:revealWipe 3s ease infinite}
+  @keyframes revealWipe{0%,100%{clip-path:inset(0 80% 0 0)}50%{clip-path:inset(0 20% 0 0)}}
+
+  /* Image Trail */
+  .mini-trail{position:relative;width:80%;height:70%}
+  .mini-trail-dot{position:absolute;width:20px;height:26px;border-radius:4px;opacity:0;animation:trailPop 3s ease infinite}
+  .mini-trail-dot:nth-child(1){left:20%;top:30%;background:#a8748e;animation-delay:0s}
+  .mini-trail-dot:nth-child(2){left:40%;top:50%;background:#748ea8;animation-delay:.3s}
+  .mini-trail-dot:nth-child(3){left:60%;top:25%;background:#8ea874;animation-delay:.6s}
+  .mini-trail-dot:nth-child(4){left:75%;top:55%;background:#a8a074;animation-delay:.9s}
+  @keyframes trailPop{0%{opacity:0;transform:scale(.5)}20%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(.6)}}
+
+  /* Flip Card */
+  .mini-flip{width:50px;height:64px;perspective:200px}
+  .mini-flip-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:flipSpin 4s ease infinite}
+  .mini-flip-f,.mini-flip-b{position:absolute;inset:0;border-radius:8px;backface-visibility:hidden}
+  .mini-flip-f{background:#4f46e5}
+  .mini-flip-b{background:#22c55e;transform:rotateY(180deg)}
+  @keyframes flipSpin{0%,30%{transform:rotateY(0)}50%,80%{transform:rotateY(180deg)}100%{transform:rotateY(360deg)}}
+
+  /* Magnetic Grid */
+  .mini-magnet{display:grid;grid-template-columns:repeat(4,12px);gap:4px}
+  .mini-magnet-dot{width:12px;height:12px;border-radius:3px;background:#1e1e22;animation:magPulse 2s ease infinite}
+  .mini-magnet-dot:nth-child(5),.mini-magnet-dot:nth-child(6),.mini-magnet-dot:nth-child(9),.mini-magnet-dot:nth-child(10){animation:magPush 2s ease infinite}
+  @keyframes magPulse{0%,100%{transform:translate(0)}50%{transform:translate(0)}}
+  @keyframes magPush{0%,100%{transform:translate(0);background:#1e1e22}50%{transform:translate(3px,3px);background:#333}}
+
+  /* Spotlight Border */
+  .mini-spot-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;width:70%;height:60%;background:var(--border);border-radius:8px;overflow:hidden}
+  .mini-spot-cell{background:var(--bg);position:relative}
+  .mini-spot-cell::after{content:'';position:absolute;inset:0;opacity:0;animation:spotGlow 3s ease infinite;background:radial-gradient(circle at 70% 30%,rgba(255,255,255,.06),transparent)}
+  .mini-spot-cell:nth-child(1)::after{animation-delay:0s}
+  .mini-spot-cell:nth-child(2)::after{animation-delay:.5s}
+  .mini-spot-cell:nth-child(3)::after{animation-delay:1s}
+  .mini-spot-cell:nth-child(4)::after{animation-delay:1.5s}
+  @keyframes spotGlow{0%,100%{opacity:0}50%{opacity:1}}
+
+  /* Drag Pan */
+  .mini-pan{position:relative;width:80%;height:70%}
+  .mini-pan-item{position:absolute;border-radius:6px;animation:panDrift 5s ease infinite}
+  .mini-pan-item:nth-child(1){width:30px;height:40px;background:#2a1a10;left:15%;top:20%;animation-delay:0s}
+  .mini-pan-item:nth-child(2){width:35px;height:28px;background:#1a2a1e;left:55%;top:40%;animation-delay:1s}
+  .mini-pan-item:nth-child(3){width:25px;height:35px;background:#1a1a2e;left:35%;top:60%;animation-delay:2s}
+  @keyframes panDrift{0%,100%{transform:translate(0)}50%{transform:translate(8px,-6px)}}
+
+  /* Particle Button */
+  .mini-btn{padding:8px 20px;background:#4f46e5;border-radius:8px;font-size:11px;font-weight:500;position:relative}
+  .mini-particle{position:absolute;width:4px;height:4px;border-radius:50%;background:#4f46e5;animation:particleBurst 2s ease infinite}
+  .mini-particle:nth-child(1){animation-delay:0s;top:50%;left:50%}
+  .mini-particle:nth-child(2){animation-delay:.1s;top:50%;left:50%}
+  .mini-particle:nth-child(3){animation-delay:.2s;top:50%;left:50%}
+  @keyframes particleBurst{0%{transform:translate(0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+
+  /* Odometer */
+  .mini-odo{font-size:28px;font-weight:700;font-family:'Outfit',sans-serif;letter-spacing:-.02em;color:var(--accent);overflow:hidden;height:1.2em;display:flex}
+  .mini-odo-digit{display:inline-block;animation:odoRoll 2s ease infinite}
+  @keyframes odoRoll{0%{transform:translateY(1.2em)}30%,100%{transform:translateY(0)}}
+
+  /* Scramble */
+  .mini-scramble{font-size:18px;font-weight:600;letter-spacing:-.01em;animation:scrambleFade 2s step-end infinite}
+  @keyframes scrambleFade{0%{opacity:.3}10%{opacity:.5}20%{opacity:.7}30%{opacity:.9}40%,80%{opacity:1}100%{opacity:.3}}
+
+  /* Marquee */
+  .mini-marquee{display:flex;gap:16px;font-size:14px;font-weight:700;white-space:nowrap;animation:marqueeSlide 3s linear infinite;opacity:.4}
+  @keyframes marqueeSlide{0%{transform:translateX(30px)}100%{transform:translateX(-80px)}}
+
+  /* Circular Text */
+  .mini-circle svg{animation:spin 8s linear infinite;width:60px;height:60px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* Glitch */
+  .mini-glitch{font-size:24px;font-weight:800;position:relative}
+  .mini-glitch::before,.mini-glitch::after{content:'FX';position:absolute;top:0;left:0}
+  .mini-glitch::before{color:#00f0ff;clip-path:inset(0 0 70% 0);animation:glitchMini .4s steps(2) infinite}
+  .mini-glitch::after{color:#ff3b3b;clip-path:inset(70% 0 0 0);animation:glitchMini .4s steps(3) infinite reverse}
+  @keyframes glitchMini{0%{transform:translate(-2px,-1px)}50%{transform:translate(2px,1px)}100%{transform:translate(0)}}
+
+  /* Typewriter */
+  .mini-type{font-size:14px;font-weight:500;border-right:2px solid var(--accent);padding-right:2px;animation:typeBlink .6s step-end infinite;white-space:nowrap;overflow:hidden;width:0;animation:typeGrow 3s steps(12) infinite,typeBlink .6s step-end infinite}
+  @keyframes typeGrow{0%{width:0}50%,70%{width:100px}100%{width:0}}
+  @keyframes typeBlink{50%{border-color:transparent}}
+
+  /* Gradient Stroke */
+  .mini-stroke{font-size:32px;font-weight:800;color:transparent;-webkit-text-stroke:1px;background:linear-gradient(90deg,#c8a97e,#5eadb5,#a8748e,#c8a97e);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;animation:strokeMove 3s linear infinite}
+  @keyframes strokeMove{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+
+  /* Coverflow */
+  .mini-cover{display:flex;align-items:center;gap:4px;perspective:200px}
+  .mini-cover-item{width:24px;height:36px;border-radius:4px;flex-shrink:0}
+  .mini-cover-item:nth-child(1){transform:rotateY(30deg) scale(.8);opacity:.4;background:#2a1a10}
+  .mini-cover-item:nth-child(2){transform:rotateY(15deg) scale(.9);opacity:.6;background:#1a2a1e}
+  .mini-cover-item:nth-child(3){transform:scale(1.1);background:#5eadb5}
+  .mini-cover-item:nth-child(4){transform:rotateY(-15deg) scale(.9);opacity:.6;background:#1a1a2e}
+  .mini-cover-item:nth-child(5){transform:rotateY(-30deg) scale(.8);opacity:.4;background:#2e1a2a}
+
+  /* Dynamic Island */
+  .mini-island{background:#1a1a1f;border:1px solid #2a2a30;border-radius:100px;padding:6px 16px;font-size:10px;display:flex;align-items:center;gap:6px;animation:islandMorph 4s ease infinite}
+  .mini-island-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:breathe 2s ease infinite}
+  @keyframes breathe{0%,100%{opacity:.5}50%{opacity:1}}
+  @keyframes islandMorph{0%,30%{padding:6px 16px;border-radius:100px}50%,70%{padding:12px 20px;border-radius:14px}100%{padding:6px 16px;border-radius:100px}}
+
+  /* Dock */
+  .mini-dock{display:flex;align-items:flex-end;gap:3px;padding:4px 8px;background:rgba(26,26,31,.6);border-radius:10px}
+  .mini-dock-item{width:16px;height:16px;border-radius:4px;transition:all .2s}
+  .mini-dock:hover .mini-dock-item:nth-child(3){width:22px;height:22px}
+  .mini-dock:hover .mini-dock-item:nth-child(2),.mini-dock:hover .mini-dock-item:nth-child(4){width:19px;height:19px}
+
+  /* Mesh */
+  .mini-mesh{width:80%;height:70%;border-radius:10px;overflow:hidden;position:relative}
+  .mini-mesh-blob{position:absolute;border-radius:50%;filter:blur(20px);animation:meshFloat 4s ease infinite}
+  .mini-mesh-blob:nth-child(1){width:60px;height:60px;background:rgba(200,169,126,.3);left:10%;top:20%;animation-delay:0s}
+  .mini-mesh-blob:nth-child(2){width:50px;height:50px;background:rgba(94,173,181,.25);right:10%;top:40%;animation-delay:1s}
+  .mini-mesh-blob:nth-child(3){width:40px;height:40px;background:rgba(168,116,142,.25);left:30%;bottom:10%;animation-delay:2s}
+  @keyframes meshFloat{0%,100%{transform:translate(0)}50%{transform:translate(10px,-8px)}}
+
+  /* ─── Footer ─── */
+  .footer-note{padding:48px 24px;text-align:center;font-size:13px;color:var(--muted);max-width:55ch;margin:0 auto;line-height:1.5}
+  .footer-note a{color:var(--text)}
+  footer{border-top:1px solid var(--border);padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+
+  /* ─── Mobile ─── */
+  @media(max-width:768px){
+    .bento{grid-template-columns:1fr 1fr !important}
+    .span-2c,.span-2c2r{grid-column:span 2}
+    .span-2r{grid-row:span 1}
+    .bento-scroll,.bento-cursor,.bento-click,.bento-ambient{grid-auto-rows:160px}
+  }
+  @media(max-width:480px){
+    .bento{grid-template-columns:1fr !important}
+    .span-2c,.span-2c2r{grid-column:span 1}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="label">Cinematic Sites Framework</div>
+  <h1>31 <span>cinematic modules</span> for websites that move</h1>
+  <p>Each module is a standalone HTML file. No frameworks, no build step. Click any card to see it live.</p>
+</div>
+
+<!-- ═══ SCROLL-DRIVEN ═══ -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-dot" style="background:#e8793a"></div>
+    <div class="section-title">Scroll-Driven</div>
+    <div class="section-count">9 modules</div>
+  </div>
+  <div class="bento bento-scroll">
+    <a href="text-mask.html" class="card span-2c"><div class="card-demo"><div class="mini-mask">REVEAL</div><div class="mini-mask-fill">REVEAL</div></div><div class="card-info"><span class="card-num">01</span><span class="card-name">Text Mask Reveal</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="sticky-stack.html" class="card"><div class="card-demo"><div class="mini-stack"><div class="mini-stack-card"></div><div class="mini-stack-card"></div><div class="mini-stack-card"></div></div></div><div class="card-info"><span class="card-num">02</span><span class="card-name">Sticky Stack</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="zoom-parallax.html" class="card"><div class="card-demo"><div class="mini-zoom">DEPTH</div></div><div class="card-info"><span class="card-num">03</span><span class="card-name">Zoom Parallax</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="horizontal-scroll.html" class="card span-2c"><div class="card-demo"><div class="mini-hscroll"><div class="mini-hcard" style="background:#2a1a10"></div><div class="mini-hcard" style="background:#1a2a1e"></div><div class="mini-hcard" style="background:#1a1a2e"></div><div class="mini-hcard" style="background:#2e1a2a"></div><div class="mini-hcard" style="background:#2e2a1a"></div></div></div><div class="card-info"><span class="card-num">06</span><span class="card-name">Horizontal Scroll Hijack</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="sticky-cards.html" class="card"><div class="card-demo"><div class="mini-stickyc"></div><div class="mini-stickyc"></div><div class="mini-stickyc"></div></div><div class="card-info"><span class="card-num">07</span><span class="card-name">Sticky Cards</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="svg-draw.html" class="card"><div class="card-demo"><svg width="80" height="80" viewBox="0 0 80 80"><path class="mini-svg-line" d="M10,70 Q40,10 70,40 Q50,70 30,50"/></svg></div><div class="card-info"><span class="card-num">12</span><span class="card-name">SVG Draw</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="curtain-reveal.html" class="card span-2c"><div class="card-demo"><div class="mini-curtain"><div class="mini-curtain-bg">Reveal</div><div class="mini-curtain-l">DIS</div><div class="mini-curtain-r">COVER</div></div></div><div class="card-info"><span class="card-num">13</span><span class="card-name">Curtain Reveal</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="split-scroll.html" class="card"><div class="card-demo"><div class="mini-split"><div class="mini-split-col"><div class="mini-split-item" style="background:#1a1a2e"></div><div class="mini-split-item" style="background:#2d4a3e"></div><div class="mini-split-item" style="background:#4a3a2d"></div><div class="mini-split-item" style="background:#1a1a2e"></div></div><div class="mini-split-col"><div class="mini-split-item" style="background:#2e1a1a"></div><div class="mini-split-item" style="background:#1a2e2a"></div><div class="mini-split-item" style="background:#2e2a1a"></div><div class="mini-split-item" style="background:#2e1a1a"></div></div></div></div><div class="card-info"><span class="card-num">16</span><span class="card-name">Split Screen</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="color-shift.html" class="card"><div class="card-demo"><div class="mini-colorshift"></div></div><div class="card-info"><span class="card-num">20</span><span class="card-name">Color Shift</span><span class="card-arrow">&rarr;</span></div></a>
+  </div>
+</section>
+
+<!-- ═══ CURSOR & HOVER ═══ -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-dot" style="background:#f5a623"></div>
+    <div class="section-title">Cursor & Hover</div>
+    <div class="section-count">9 modules</div>
+  </div>
+  <div class="bento bento-cursor">
+    <a href="cursor-reactive.html" class="card span-2c"><div class="card-demo"><div class="mini-glow"></div></div><div class="card-info"><span class="card-num">04</span><span class="card-name">Cursor-Reactive Environment</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="accordion-slider.html" class="card"><div class="card-demo"><div class="mini-acc"><div class="mini-acc-panel" style="background:#2a1a10"></div><div class="mini-acc-panel" style="background:#1a2a1e"></div><div class="mini-acc-panel" style="background:#1a1a2e"></div><div class="mini-acc-panel" style="background:#2e1a2a"></div></div></div><div class="card-info"><span class="card-num">09</span><span class="card-name">Accordion Slider</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="cursor-reveal.html" class="card"><div class="card-demo"><div class="mini-reveal"><div class="mini-reveal-a"></div><div class="mini-reveal-b"></div></div></div><div class="card-info"><span class="card-num">11</span><span class="card-name">Cursor Reveal</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="image-trail.html" class="card"><div class="card-demo"><div class="mini-trail"><div class="mini-trail-dot"></div><div class="mini-trail-dot"></div><div class="mini-trail-dot"></div><div class="mini-trail-dot"></div></div></div><div class="card-info"><span class="card-num">14</span><span class="card-name">Image Trail</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="flip-cards.html" class="card"><div class="card-demo"><div class="mini-flip"><div class="mini-flip-inner"><div class="mini-flip-f"></div><div class="mini-flip-b"></div></div></div></div><div class="card-info"><span class="card-num">18</span><span class="card-name">3D Flip Cards</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="magnetic-grid.html" class="card"><div class="card-demo"><div class="mini-magnet"><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div><div class="mini-magnet-dot"></div></div></div><div class="card-info"><span class="card-num">22</span><span class="card-name">Magnetic Grid</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="spotlight-border.html" class="card span-2c"><div class="card-demo"><div class="mini-spot-grid"><div class="mini-spot-cell"></div><div class="mini-spot-cell"></div><div class="mini-spot-cell"></div><div class="mini-spot-cell"></div></div></div><div class="card-info"><span class="card-num">25</span><span class="card-name">Spotlight Border Cards</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="drag-pan.html" class="card"><div class="card-demo"><div class="mini-pan"><div class="mini-pan-item"></div><div class="mini-pan-item"></div><div class="mini-pan-item"></div></div></div><div class="card-info"><span class="card-num">29</span><span class="card-name">Drag-to-Pan</span><span class="card-arrow">&rarr;</span></div></a>
+  </div>
+</section>
+
+<!-- ═══ CLICK & TAP ═══ -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-dot" style="background:#d4622a"></div>
+    <div class="section-title">Click & Tap</div>
+    <div class="section-count">7 modules</div>
+  </div>
+  <div class="bento bento-click">
+    <a href="view-transitions.html" class="card span-2c"><div class="card-demo"><div class="mini-morph"></div></div><div class="card-info"><span class="card-num">05</span><span class="card-name">View Transition Morphing</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="particle-button.html" class="card"><div class="card-demo"><div class="mini-btn">Click<div class="mini-particle" style="--dx:-20px;--dy:-25px"></div><div class="mini-particle" style="--dx:18px;--dy:-22px"></div><div class="mini-particle" style="--dx:-5px;--dy:-30px"></div></div></div><div class="card-info"><span class="card-num">23</span><span class="card-name">Particle Button</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="odometer.html" class="card"><div class="card-demo"><div class="mini-odo"><span class="mini-odo-digit">2</span><span class="mini-odo-digit" style="animation-delay:.1s">8</span><span class="mini-odo-digit" style="animation-delay:.2s">4</span><span class="mini-odo-digit" style="animation-delay:.3s">7</span></div></div><div class="card-info"><span class="card-num">21</span><span class="card-name">Odometer Counter</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="coverflow.html" class="card span-2c"><div class="card-demo"><div class="mini-cover"><div class="mini-cover-item"></div><div class="mini-cover-item"></div><div class="mini-cover-item"></div><div class="mini-cover-item"></div><div class="mini-cover-item"></div></div></div><div class="card-info"><span class="card-num">27</span><span class="card-name">3D Coverflow Carousel</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="dynamic-island.html" class="card"><div class="card-demo"><div class="mini-island"><div class="mini-island-dot"></div>3 new</div></div><div class="card-info"><span class="card-num">28</span><span class="card-name">Dynamic Island</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="dock-nav.html" class="card"><div class="card-demo"><div class="mini-dock"><div class="mini-dock-item" style="background:#e85d3a"></div><div class="mini-dock-item" style="background:#22c55e"></div><div class="mini-dock-item" style="background:#4f46e5"></div><div class="mini-dock-item" style="background:#c8a97e"></div><div class="mini-dock-item" style="background:#5eadb5"></div></div></div><div class="card-info"><span class="card-num">30</span><span class="card-name">macOS Dock</span><span class="card-arrow">&rarr;</span></div></a>
+  </div>
+</section>
+
+<!-- ═══ AMBIENT & AUTO ═══ -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-dot" style="background:#c46a2a"></div>
+    <div class="section-title">Ambient & Auto</div>
+    <div class="section-count">6 modules</div>
+  </div>
+  <div class="bento bento-ambient">
+    <a href="text-scramble.html" class="card"><div class="card-demo"><div class="mini-scramble">DECODE</div></div><div class="card-info"><span class="card-num">08</span><span class="card-name">Text Scramble</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="kinetic-marquee.html" class="card span-2c"><div class="card-demo"><div class="mini-marquee">DESIGN &bull; BUILD &bull; SHIP &bull; SCALE &bull; DESIGN &bull; BUILD</div></div><div class="card-info"><span class="card-num">10</span><span class="card-name">Kinetic Marquee</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="mesh-gradient.html" class="card"><div class="card-demo"><div class="mini-mesh"><div class="mini-mesh-blob"></div><div class="mini-mesh-blob"></div><div class="mini-mesh-blob"></div></div></div><div class="card-info"><span class="card-num">15</span><span class="card-name">Mesh Gradient</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="circular-text.html" class="card"><div class="card-demo"><div class="mini-circle"><svg viewBox="0 0 100 100"><defs><path id="mc" d="M50,50 m-35,0 a35,35 0 1,1 70,0 a35,35 0 1,1 -70,0"/></defs><text fill="#5eadb5" font-size="7" font-family="Outfit" letter-spacing=".15em"><textPath href="#mc">EXPLORE &bull; EXPLORE &bull; EXPLORE &bull; </textPath></text></svg></div></div><div class="card-info"><span class="card-num">17</span><span class="card-name">Circular Text</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="glitch-effect.html" class="card"><div class="card-demo"><div class="mini-glitch">FX</div></div><div class="card-info"><span class="card-num">19</span><span class="card-name">Glitch Effect</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="typewriter.html" class="card"><div class="card-demo"><div class="mini-type">We build_</div></div><div class="card-info"><span class="card-num">24</span><span class="card-name">Typewriter</span><span class="card-arrow">&rarr;</span></div></a>
+    <a href="gradient-stroke.html" class="card span-2c"><div class="card-demo"><div class="mini-stroke">STROKE</div></div><div class="card-info"><span class="card-num">26</span><span class="card-name">Gradient Stroke Text</span><span class="card-arrow">&rarr;</span></div></a>
+  </div>
+</section>
+
+<div class="footer-note">Plus the <a href="../macbook/">scroll-driven frame sequence</a>. 32 cinematic modules total, each a single HTML file.</div>
+<footer style="display:flex;flex-direction:column;align-items:center;gap:6px">
+  <div>&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</footer>
+
+</body>
+</html>

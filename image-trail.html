@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hover Image Trail — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e;--accent:#a8748e;--border:#1e1e22}
+  *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,6vw,64px);font-weight:600;line-height:1.15;max-width:700px;letter-spacing:-.025em}
+  .hero h1 span{color:var(--accent)}
+  .hero p{margin-top:16px;font-size:18px;color:var(--muted);max-width:50ch;line-height:1.5}
+  .trail-section{position:relative;min-height:80vh;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:none}
+  .trail-section h2{font-size:clamp(48px,10vw,140px);font-weight:700;letter-spacing:-.04em;text-align:center;position:relative;z-index:2;pointer-events:none;line-height:.95}
+  .trail-img{position:fixed;width:160px;height:200px;border-radius:10px;pointer-events:none;z-index:1;opacity:0;will-change:transform,opacity;object-fit:cover}
+  .trail-section-2{position:relative;min-height:60vh;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:none;border-top:1px solid var(--border)}
+  .trail-section-2 .trail-link{font-size:clamp(28px,5vw,56px);font-weight:600;letter-spacing:-.02em;color:var(--text);text-decoration:none;padding:20px 0;display:block;position:relative;z-index:2;transition:color .2s}
+  .trail-section-2 .trail-link:hover{color:var(--accent)}
+  .trail-list{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(168,116,142,.2);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Paradigm 14 — Hover Image Trail</div>
+  <h1>Your cursor leaves a <span>trail of images</span></h1>
+  <p>Move your mouse and images pop up along the path, then fade away. Used by fashion, photography, and creative agency sites.</p>
+</section>
+<section class="trail-section" id="trailArea">
+  <h2>MOVE<br>YOUR<br>MOUSE</h2>
+</section>
+<section class="trail-section-2" id="trailArea2">
+  <div class="trail-list">
+    <a href="#" class="trail-link" data-hue="0">Branding</a>
+    <a href="#" class="trail-link" data-hue="60">Websites</a>
+    <a href="#" class="trail-link" data-hue="120">Motion</a>
+    <a href="#" class="trail-link" data-hue="200">Photography</a>
+  </div>
+</section>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Playful discovery</h2>
+  <p>The image trail turns passive browsing into active play. Visitors wave their cursor around just to see the effect. Portfolio and fashion sites use this to show work without a traditional grid — the images find the visitor instead of the other way around.</p>
+</section>
+<footer>Paradigm Demo — Hover Image Trail</footer>
+<script>
+(function(){
+  var colors=['#a8748e','#748ea8','#8ea874','#a8a074','#74a8a0','#a07448','#7448a0','#48a074'];
+  var pool=[];var poolSize=20;var lastX=0,lastY=0;var threshold=60;
+  for(var i=0;i<poolSize;i++){
+    var el=document.createElement('div');
+    el.className='trail-img';
+    el.style.background=colors[i%colors.length];
+    document.body.appendChild(el);
+    pool.push({el:el,active:false});
+  }
+  var idx=0;
+  function spawnTrail(x,y){
+    var item=pool[idx%poolSize];
+    idx++;
+    item.el.style.left=(x-80)+'px';
+    item.el.style.top=(y-100)+'px';
+    item.el.style.opacity='0.85';
+    item.el.style.transform='scale(0.8) rotate('+(Math.random()*20-10)+'deg)';
+    item.el.style.transition='none';
+    item.el.offsetHeight;
+    item.el.style.transition='opacity 0.8s ease 0.3s, transform 0.8s ease';
+    item.el.style.opacity='0';
+    item.el.style.transform='scale(0.6) rotate('+(Math.random()*30-15)+'deg)';
+  }
+  document.getElementById('trailArea').addEventListener('mousemove',function(e){
+    var dx=e.clientX-lastX,dy=e.clientY-lastY;
+    if(Math.sqrt(dx*dx+dy*dy)>threshold){
+      lastX=e.clientX;lastY=e.clientY;
+      spawnTrail(e.clientX,e.clientY);
+    }
+  });
+  document.getElementById('trailArea2').addEventListener('mousemove',function(e){
+    var dx=e.clientX-lastX,dy=e.clientY-lastY;
+    if(Math.sqrt(dx*dx+dy*dy)>threshold){
+      lastX=e.clientX;lastY=e.clientY;
+      spawnTrail(e.clientX,e.clientY);
+    }
+  });
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

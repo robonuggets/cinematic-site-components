@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Coverflow Carousel — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e;--accent:#5eadb5;--border:#1e1e22}
+  *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,6vw,64px);font-weight:600;line-height:1.15;max-width:700px;letter-spacing:-.025em}
+  .hero h1 span{color:var(--accent)}
+  .carousel-section{padding:40px 0 120px;perspective:1200px;overflow:hidden}
+  .carousel-label{text-align:center;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:40px;padding:0 24px}
+  .carousel-track{display:flex;align-items:center;justify-content:center;height:400px;position:relative;transform-style:preserve-3d}
+  .carousel-item{position:absolute;width:300px;height:360px;border-radius:20px;overflow:hidden;transition:all .6s cubic-bezier(.16,1,.3,1);cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;padding:28px}
+  .carousel-item h3{font-size:20px;font-weight:600;margin-bottom:4px}
+  .carousel-item p{font-size:13px;opacity:.7}
+  .carousel-nav{display:flex;justify-content:center;gap:12px;margin-top:32px}
+  .carousel-nav button{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--text);font-size:18px;cursor:pointer;transition:background .2s,border-color .2s}
+  .carousel-nav button:hover{background:#1e1e22;border-color:#333}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(94,173,181,.2);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Paradigm 27 — 3D Coverflow Carousel</div>
+  <h1>Center focused, <span>edges angled back</span></h1>
+  <p>The classic Apple iTunes coverflow effect. The active item is front and center, flanking items tilt away in perspective. Click arrows or items to navigate.</p>
+</section>
+<section class="carousel-section">
+  <div class="carousel-label">Click arrows or items to navigate</div>
+  <div class="carousel-track" id="track"></div>
+  <div class="carousel-nav">
+    <button onclick="move(-1)">&larr;</button>
+    <button onclick="move(1)">&rarr;</button>
+  </div>
+</section>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Focus with context</h2>
+  <p>The center item gets full attention while flanking items provide context. It's a better carousel because you can see what's next without clicking. Portfolio pieces, testimonials, and product variants all work. The 3D perspective adds depth that flat carousels lack.</p>
+</section>
+<footer>Paradigm Demo — 3D Coverflow Carousel</footer>
+<script>
+(function(){
+  var items=[
+    {title:'Brand Identity',desc:'Logo, type, colour system',bg:'linear-gradient(135deg,#2a1a10,#1a0d08)'},
+    {title:'Website',desc:'Responsive, animated, fast',bg:'linear-gradient(135deg,#1a2a1e,#0d1a10)'},
+    {title:'Mobile App',desc:'iOS and Android native',bg:'linear-gradient(135deg,#1a1a2e,#0a0a1a)'},
+    {title:'Dashboard',desc:'Data-dense, real-time',bg:'linear-gradient(135deg,#2e1a2a,#1a0d16)'},
+    {title:'Marketing Site',desc:'Conversion-optimised',bg:'linear-gradient(135deg,#2e2a1a,#1a160d)'},
+    {title:'E-commerce',desc:'Checkout, cart, catalogue',bg:'linear-gradient(135deg,#1a2e2a,#0d1a16)'},
+    {title:'SaaS Platform',desc:'Multi-tenant, scalable',bg:'linear-gradient(135deg,#2a1a2a,#160d16)'}
+  ];
+  var track=document.getElementById('track');
+  var current=Math.floor(items.length/2);
+  items.forEach(function(item,i){
+    var el=document.createElement('div');el.className='carousel-item';
+    el.style.background=item.bg;
+    el.innerHTML='<h3>'+item.title+'</h3><p>'+item.desc+'</p>';
+    el.addEventListener('click',function(){current=i;render()});
+    track.appendChild(el);
+  });
+  window.move=function(dir){current=Math.max(0,Math.min(items.length-1,current+dir));render()};
+  function render(){
+    var els=track.children;
+    for(var i=0;i<els.length;i++){
+      var off=i-current;
+      var absOff=Math.abs(off);
+      var tx=off*220;
+      var ry=off<0?40:off>0?-40:0;
+      var sc=absOff===0?1:0.8;
+      var z=absOff===0?10:10-absOff;
+      var op=absOff>2?0:1-absOff*0.2;
+      els[i].style.transform='translateX('+tx+'px) rotateY('+ry+'deg) scale('+sc+')';
+      els[i].style.zIndex=z;
+      els[i].style.opacity=op;
+      els[i].style.filter=absOff===0?'brightness(1)':'brightness(0.6)';
+    }
+  }
+  render();
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

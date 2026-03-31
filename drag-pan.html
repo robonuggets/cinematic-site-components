@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drag-to-Pan Grid — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e;--accent:#a8748e;--border:#1e1e22}
+  *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,6vw,64px);font-weight:600;line-height:1.15;max-width:700px;letter-spacing:-.025em}
+  .hero h1 span{color:var(--accent)}
+  .hero p{margin-top:16px;font-size:18px;color:var(--muted);max-width:50ch;line-height:1.5}
+  .pan-section{height:80vh;position:relative;overflow:hidden;cursor:grab;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .pan-section:active{cursor:grabbing}
+  .pan-canvas{position:absolute;will-change:transform}
+  .pan-item{position:absolute;border-radius:16px;overflow:hidden;border:1px solid var(--border);display:flex;flex-direction:column;justify-content:flex-end;padding:20px;transition:border-color .3s,box-shadow .3s}
+  .pan-item:hover{border-color:#333;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+  .pan-item h3{font-size:15px;font-weight:600;margin-bottom:2px}
+  .pan-item p{font-size:11px;color:var(--muted)}
+  .pan-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;color:var(--muted);pointer-events:none;z-index:10;opacity:.6}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(168,116,142,.2);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Paradigm 29 — Drag-to-Pan Grid</div>
+  <h1>A boundless grid you can <span>drag anywhere</span></h1>
+  <p>Click and drag to pan in any direction. An infinite canvas of cards scattered in space. Great for portfolios, moodboards, and creative showcases.</p>
+</section>
+<section class="pan-section" id="panArea">
+  <div class="pan-hint">Click and drag to explore</div>
+  <div class="pan-canvas" id="panCanvas"></div>
+</section>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Exploration over navigation</h2>
+  <p>The drag-to-pan grid turns browsing into exploration. There's no linear order — visitors choose their own path. Moodboards, design portfolios, and creative agencies use this to break free from the vertical scroll paradigm. It signals creativity and invites play.</p>
+</section>
+<footer>Paradigm Demo — Drag-to-Pan Grid</footer>
+<script>
+(function(){
+  var canvas=document.getElementById('panCanvas');
+  var area=document.getElementById('panArea');
+  var items=[
+    {x:-400,y:-200,w:240,h:300,bg:'linear-gradient(135deg,#2a1a10,#1a0d08)',t:'Branding',d:'Visual identity system'},
+    {x:-100,y:-350,w:280,h:200,bg:'linear-gradient(135deg,#1a2a1e,#0d1a10)',t:'Photography',d:'Editorial shoots'},
+    {x:250,y:-180,w:200,h:260,bg:'linear-gradient(135deg,#1a1a2e,#0a0a1a)',t:'Web Design',d:'Responsive sites'},
+    {x:-300,y:100,w:220,h:280,bg:'linear-gradient(135deg,#2e1a2a,#1a0d16)',t:'Motion',d:'Animation and video'},
+    {x:50,y:150,w:260,h:220,bg:'linear-gradient(135deg,#2e2a1a,#1a160d)',t:'Packaging',d:'Physical products'},
+    {x:400,y:80,w:200,h:300,bg:'linear-gradient(135deg,#1a2e2a,#0d1a16)',t:'Typography',d:'Custom typefaces'},
+    {x:-500,y:-50,w:180,h:240,bg:'linear-gradient(135deg,#2a2a1a,#16160d)',t:'Illustration',d:'Digital and print'},
+    {x:500,y:-300,w:240,h:200,bg:'linear-gradient(135deg,#1a1e2e,#0d1018)',t:'3D',d:'Product renders'},
+    {x:150,y:400,w:220,h:260,bg:'linear-gradient(135deg,#2e1a1a,#1a0d0d)',t:'Print',d:'Editorial layout'},
+    {x:-200,y:350,w:260,h:200,bg:'linear-gradient(135deg,#1a2a2e,#0d1618)',t:'UI/UX',d:'App interfaces'}
+  ];
+  var ox=area.offsetWidth/2,oy=area.offsetHeight/2;
+  items.forEach(function(item){
+    var el=document.createElement('div');el.className='pan-item';
+    el.style.left=(ox+item.x)+'px';el.style.top=(oy+item.y)+'px';
+    el.style.width=item.w+'px';el.style.height=item.h+'px';
+    el.style.background=item.bg;
+    el.innerHTML='<h3>'+item.t+'</h3><p>'+item.d+'</p>';
+    canvas.appendChild(el);
+  });
+  var dragging=false,sx=0,sy=0,tx=0,ty=0,cx=0,cy=0;
+  area.addEventListener('mousedown',function(e){dragging=true;sx=e.clientX-cx;sy=e.clientY-cy;area.querySelector('.pan-hint').style.opacity='0'});
+  window.addEventListener('mousemove',function(e){if(!dragging)return;cx=e.clientX-sx;cy=e.clientY-sy;canvas.style.transform='translate('+cx+'px,'+cy+'px)'});
+  window.addEventListener('mouseup',function(){dragging=false});
+  area.addEventListener('touchstart',function(e){dragging=true;sx=e.touches[0].clientX-cx;sy=e.touches[0].clientY-cy},{passive:true});
+  area.addEventListener('touchmove',function(e){if(!dragging)return;cx=e.touches[0].clientX-sx;cy=e.touches[0].clientY-sy;canvas.style.transform='translate('+cx+'px,'+cy+'px)'},{passive:true});
+  area.addEventListener('touchend',function(){dragging=false});
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gradient Stroke Text — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e}
+  *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .stroke-section{min-height:60vh;display:flex;align-items:center;justify-content:center;padding:40px 24px}
+  .stroke-text{font-size:clamp(60px,14vw,200px);font-weight:800;letter-spacing:-.05em;text-transform:uppercase;line-height:.9;text-align:center;color:transparent;-webkit-text-stroke:2px transparent;background:linear-gradient(90deg,#c8a97e,#5eadb5,#a8748e,#e85d3a,#4f46e5,#c8a97e);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px currentColor;animation:gradientMove 6s linear infinite;position:relative}
+  @supports(-webkit-text-stroke:1px red){.stroke-text{-webkit-text-fill-color:transparent;-webkit-text-stroke:2px;-webkit-background-clip:text;background-clip:text}}
+  @keyframes gradientMove{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+  .filled-section{min-height:40vh;display:flex;align-items:center;justify-content:center;padding:40px 24px}
+  .filled-text{font-size:clamp(48px,10vw,140px);font-weight:800;letter-spacing:-.04em;text-transform:uppercase;text-align:center;line-height:.95;background:linear-gradient(135deg,#c8a97e,#e85d3a,#a8748e,#5eadb5);background-size:200% 200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gradShift 4s ease infinite}
+  @keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  .divider{width:60px;height:1px;background:#1e1e22;margin:60px auto}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c8a97e;border:1px solid rgba(200,169,126,.2);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Paradigm 26 — Gradient Stroke Text</div>
+  <h1 style="font-size:clamp(32px,6vw,64px);font-weight:600;letter-spacing:-.025em;max-width:700px">Animated gradient running along <span style="color:#c8a97e">outlined text</span></h1>
+</section>
+<section class="stroke-section">
+  <div class="stroke-text">OUTLINE</div>
+</section>
+<div class="divider"></div>
+<section class="filled-section">
+  <div class="filled-text">GRADIENT</div>
+</section>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Movement without distraction</h2>
+  <p>The gradient flows along the text continuously, drawing the eye without competing with content below. Outlined text feels more refined than filled gradients — it's a subtle accent, not a shout. Brand names, section dividers, and hero accents all work well.</p>
+</section>
+<footer>Paradigm Demo — Gradient Stroke Text</footer>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

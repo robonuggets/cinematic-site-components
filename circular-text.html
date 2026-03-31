@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circular Text Path — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e;--accent:#c8a97e}
+  *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,6vw,64px);font-weight:600;line-height:1.15;max-width:700px;letter-spacing:-.025em}
+  .hero h1 span{color:var(--accent)}
+  .circle-section{display:flex;align-items:center;justify-content:center;min-height:80vh;position:relative}
+  .circle-wrap{position:relative;width:320px;height:320px}
+  .circle-svg{width:100%;height:100%;animation:spin 20s linear infinite}
+  .circle-svg text{fill:var(--text);font-family:'Outfit',sans-serif;font-size:14px;letter-spacing:.3em;text-transform:uppercase;font-weight:500}
+  .circle-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+  .circle-center h3{font-size:32px;font-weight:600;letter-spacing:-.02em}
+  .circle-center p{font-size:13px;color:var(--muted);margin-top:4px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .circles-grid{display:flex;gap:48px;justify-content:center;flex-wrap:wrap;padding:80px 24px}
+  .circle-variant{position:relative;width:200px;height:200px}
+  .circle-variant svg{width:100%;height:100%}
+  .circle-variant .spin-slow{animation:spin 30s linear infinite}
+  .circle-variant .spin-scroll{transition:transform .1s}
+  .circle-variant .center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(200,169,126,.2);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Paradigm 17 — Circular Text Path</div>
+  <h1>Text curved along a <span>spinning circle</span></h1>
+  <p>SVG textPath wraps words around a circular arc that rotates continuously or reacts to scroll. Badges, logos, and accent elements.</p>
+</section>
+<section class="circle-section">
+  <div class="circle-wrap">
+    <svg class="circle-svg" viewBox="0 0 300 300">
+      <defs><path id="c1" d="M150,150 m-120,0 a120,120 0 1,1 240,0 a120,120 0 1,1 -240,0"/></defs>
+      <text><textPath href="#c1">DESIGN &bull; BUILD &bull; SHIP &bull; SCALE &bull; DESIGN &bull; BUILD &bull; SHIP &bull; SCALE &bull; </textPath></text>
+    </svg>
+    <div class="circle-center">
+      <h3>2026</h3>
+      <p>Est.</p>
+    </div>
+  </div>
+</section>
+<div class="circles-grid">
+  <div class="circle-variant">
+    <svg class="spin-slow" viewBox="0 0 200 200">
+      <defs><path id="c2" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/></defs>
+      <text fill="#5eadb5" font-family="Outfit" font-size="11" letter-spacing=".2em" text-transform="uppercase"><textPath href="#c2">EXPLORE MORE &bull; EXPLORE MORE &bull; EXPLORE MORE &bull; </textPath></text>
+    </svg>
+    <div class="center" style="color:#5eadb5">&rarr;</div>
+  </div>
+  <div class="circle-variant">
+    <svg class="spin-slow" style="animation-direction:reverse" viewBox="0 0 200 200">
+      <defs><path id="c3" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/></defs>
+      <text fill="#e85d3a" font-family="Outfit" font-size="11" letter-spacing=".2em"><textPath href="#c3">FREE CONSULTATION &bull; FREE CONSULTATION &bull; FREE CONSULTATION &bull; </textPath></text>
+    </svg>
+    <div class="center" style="color:#e85d3a">&#9734;</div>
+  </div>
+  <div class="circle-variant" id="scrollCircle">
+    <svg viewBox="0 0 200 200" id="scrollSvg">
+      <defs><path id="c4" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/></defs>
+      <text fill="#a8748e" font-family="Outfit" font-size="11" letter-spacing=".2em"><textPath href="#c4">SCROLL REACTIVE &bull; SCROLL REACTIVE &bull; SCROLL REACTIVE &bull; </textPath></text>
+    </svg>
+    <div class="center" style="color:#a8748e">&darr;</div>
+  </div>
+</div>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Badge energy</h2>
+  <p>Circular text creates a badge or seal effect that connotes authority and craft. It's a visual accent — not the main content, but a detail that signals care. Scroll-reactive rotation adds a layer of interactivity. Works as CTAs, section accents, or logo treatments.</p>
+</section>
+<footer>Paradigm Demo — Circular Text Path</footer>
+<script>
+(function(){
+  gsap.registerPlugin(ScrollTrigger);
+  var svg=document.getElementById('scrollSvg');
+  var angle=0;
+  ScrollTrigger.create({onUpdate:function(self){
+    angle+=self.getVelocity()*.02;
+    svg.style.transform='rotate('+angle+'deg)';
+  }});
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

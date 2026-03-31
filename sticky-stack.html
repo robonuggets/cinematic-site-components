@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sticky Stack Narrative — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --text: #1a1a1f;
+    --muted: #6b6b73;
+    --accent: #4f46e5;
+    --accent-light: rgba(79, 70, 229, 0.08);
+    --border: #e5e5ea;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ─── Hero ─── */
+  .hero {
+    min-height: 100dvh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 24px;
+  }
+  .hero-label {
+    font-size: 12px; font-weight: 400; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5.5vw, 60px); font-weight: 600;
+    line-height: 1.15; max-width: 700px; letter-spacing: -0.025em;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    margin-top: 16px; font-size: 18px; color: var(--muted);
+    max-width: 50ch; line-height: 1.5;
+  }
+  .scroll-hint {
+    margin-top: 48px; font-size: 13px; color: var(--muted);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ─── Sticky Stack Section ─── */
+  .stack-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 120px;
+  }
+  .stack-section-label {
+    text-align: center;
+    font-size: 12px; font-weight: 400; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 48px; padding-top: 40px;
+  }
+
+  .stack-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  /* Left: sticky product mockup */
+  .stack-visual {
+    position: sticky;
+    top: 120px;
+    height: fit-content;
+  }
+  .mockup {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+  }
+  .mockup-bar {
+    height: 40px;
+    background: #f5f5f7;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 14px; gap: 6px;
+  }
+  .mockup-dot {
+    width: 10px; height: 10px; border-radius: 50%; background: #ddd;
+  }
+  .mockup-body {
+    padding: 32px;
+    min-height: 340px;
+    display: flex; flex-direction: column; justify-content: center;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Feature states inside mockup */
+  .mockup-state {
+    position: absolute; inset: 0; padding: 32px;
+    display: flex; flex-direction: column; justify-content: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .mockup-state.active { opacity: 1; }
+  .mockup-body { position: relative; }
+
+  .mock-metric {
+    font-size: 48px; font-weight: 700; letter-spacing: -0.03em;
+    color: var(--accent); margin-bottom: 8px;
+  }
+  .mock-label { font-size: 14px; color: var(--muted); }
+  .mock-bar-row { display: flex; gap: 8px; margin-top: 16px; }
+  .mock-bar {
+    height: 6px; border-radius: 3px; background: var(--accent-light);
+  }
+  .mock-bar.filled { background: var(--accent); }
+
+  .mock-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .mock-card {
+    background: var(--bg); border-radius: 10px; padding: 16px;
+  }
+  .mock-card-num { font-size: 28px; font-weight: 600; color: var(--accent); }
+  .mock-card-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .mock-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .mock-list li {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; color: var(--text);
+  }
+  .mock-check {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--accent); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex-shrink: 0;
+  }
+
+  /* Right: scrolling feature cards */
+  .stack-features {
+    display: flex; flex-direction: column; gap: 48px;
+    padding: 40px 0;
+  }
+  .feature-card {
+    padding: 40px 32px;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    opacity: 0.35;
+    transform: translateY(10px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .feature-card.active {
+    opacity: 1;
+    transform: translateY(0);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), 0 12px 40px rgba(79, 70, 229, 0.08);
+  }
+  .feature-num {
+    font-size: 12px; font-weight: 500; color: var(--accent);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .feature-card h3 {
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+  .feature-card p {
+    font-size: 15px; color: var(--muted); line-height: 1.6;
+  }
+
+  /* ─── Explanation ─── */
+  .explain {
+    padding: 120px 24px;
+    text-align: center; max-width: 680px; margin: 0 auto;
+    border-top: 1px solid var(--border);
+  }
+  .explain .tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 400;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent-light);
+    padding: 4px 12px; border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .explain h2 {
+    font-size: clamp(24px, 4vw, 40px); font-weight: 600;
+    letter-spacing: -0.02em; margin-bottom: 16px;
+  }
+  .explain p { font-size: 17px; color: var(--muted); line-height: 1.6; }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px; text-align: center;
+    font-size: 12px; color: var(--muted);
+  }
+
+  /* ─── Mobile ─── */
+  @media (max-width: 768px) {
+    .stack-container {
+      grid-template-columns: 1fr;
+    }
+    .stack-visual {
+      position: relative; top: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-label">Paradigm 02 — Sticky Stack Narrative</div>
+  <h1>Product stays pinned.<br><span>Features scroll past it.</span></h1>
+  <p>The highest-converting layout for feature sections. Visitors see the product and read the benefit simultaneously.</p>
+  <div class="scroll-hint">Scroll down</div>
+</section>
+
+<section class="stack-section">
+  <div class="stack-section-label">Features</div>
+
+  <div class="stack-container">
+    <!-- Left: Sticky mockup -->
+    <div class="stack-visual">
+      <div class="mockup">
+        <div class="mockup-bar">
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+        </div>
+        <div class="mockup-body">
+          <!-- State 1: Dashboard metric -->
+          <div class="mockup-state active" data-state="1">
+            <div class="mock-metric">94.7%</div>
+            <div class="mock-label">Uptime this quarter</div>
+            <div class="mock-bar-row">
+              <div class="mock-bar filled" style="flex:4;"></div>
+              <div class="mock-bar" style="flex:1;"></div>
+            </div>
+          </div>
+          <!-- State 2: Grid metrics -->
+          <div class="mockup-state" data-state="2">
+            <div class="mock-grid">
+              <div class="mock-card"><div class="mock-card-num">2.4k</div><div class="mock-card-label">Active users</div></div>
+              <div class="mock-card"><div class="mock-card-num">340ms</div><div class="mock-card-label">Avg response</div></div>
+              <div class="mock-card"><div class="mock-card-num">18</div><div class="mock-card-label">Integrations</div></div>
+              <div class="mock-card"><div class="mock-card-num">99.9%</div><div class="mock-card-label">SLA guarantee</div></div>
+            </div>
+          </div>
+          <!-- State 3: Checklist -->
+          <div class="mockup-state" data-state="3">
+            <ul class="mock-list">
+              <li><div class="mock-check">&#10003;</div> SOC 2 Type II certified</li>
+              <li><div class="mock-check">&#10003;</div> End-to-end encryption</li>
+              <li><div class="mock-check">&#10003;</div> GDPR compliant by default</li>
+              <li><div class="mock-check">&#10003;</div> SSO with SAML and OIDC</li>
+              <li><div class="mock-check">&#10003;</div> Audit logs retained 1 year</li>
+            </ul>
+          </div>
+          <!-- State 4: Final CTA -->
+          <div class="mockup-state" data-state="4" style="align-items:center;text-align:center;">
+            <div style="font-size:32px;font-weight:600;letter-spacing:-0.02em;margin-bottom:8px;">Ready to ship?</div>
+            <div style="font-size:14px;color:var(--muted);margin-bottom:20px;">Your dashboard is waiting.</div>
+            <div style="display:inline-block;padding:10px 28px;background:var(--accent);color:white;border-radius:10px;font-size:14px;font-weight:500;">Get started free</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Scrolling features -->
+    <div class="stack-features">
+      <div class="feature-card active" data-feature="1">
+        <div class="feature-num">01</div>
+        <h3>Real-time monitoring</h3>
+        <p>Track uptime, latency, and error rates across every service. Instant alerts when something breaks, before your customers notice.</p>
+      </div>
+      <div class="feature-card" data-feature="2">
+        <div class="feature-num">02</div>
+        <h3>One dashboard, every metric</h3>
+        <p>Active users, response times, integrations — everything in one view. No tab-switching, no context-switching. Just data.</p>
+      </div>
+      <div class="feature-card" data-feature="3">
+        <div class="feature-num">03</div>
+        <h3>Enterprise-grade security</h3>
+        <p>SOC 2 certified, end-to-end encrypted, GDPR compliant out of the box. SSO with SAML and OIDC. Audit logs retained for a year.</p>
+      </div>
+      <div class="feature-card" data-feature="4">
+        <div class="feature-num">04</div>
+        <h3>Deploy in five minutes</h3>
+        <p>One line of code. No infrastructure changes. Works with your existing stack. Free tier with no credit card required.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>See and read at the same time</h2>
+  <p>The product visual stays pinned while feature descriptions scroll past. Visitors never have to click tabs or switch context. Stripe, Linear, and Apple all use this pattern because it measurably improves feature comprehension.</p>
+</section>
+
+<footer>Paradigm Demo — Sticky Stack Narrative</footer>
+
+<script>
+(function() {
+  gsap.registerPlugin(ScrollTrigger);
+  var cards = document.querySelectorAll('.feature-card');
+  var states = document.querySelectorAll('.mockup-state');
+
+  cards.forEach(function(card) {
+    ScrollTrigger.create({
+      trigger: card,
+      start: 'top 60%',
+      end: 'bottom 40%',
+      onEnter: function() { activate(card.dataset.feature); },
+      onEnterBack: function() { activate(card.dataset.feature); }
+    });
+  });
+
+  function activate(num) {
+    cards.forEach(function(c) { c.classList.toggle('active', c.dataset.feature === num); });
+    states.forEach(function(s) { s.classList.toggle('active', s.dataset.state === num); });
+  }
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

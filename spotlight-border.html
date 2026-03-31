@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spotlight Border Cards — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e;--border:#1e1e22}
+  *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,6vw,64px);font-weight:600;line-height:1.15;max-width:700px;letter-spacing:-.025em}
+  .hero p{margin-top:16px;font-size:18px;color:var(--muted);max-width:50ch;line-height:1.5}
+  .grid-section{padding:40px 24px 120px;max-width:960px;margin:0 auto}
+  .grid-label{text-align:center;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:40px}
+  .spot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--border);border-radius:20px;overflow:hidden}
+  .spot-card{background:var(--bg);padding:48px 32px;position:relative;overflow:hidden;cursor:default}
+  .spot-card::before{content:'';position:absolute;inset:-1px;border-radius:0;background:radial-gradient(circle 180px at var(--mx,50%) var(--my,50%),rgba(255,255,255,.06),transparent);opacity:0;transition:opacity .3s;pointer-events:none}
+  .spot-card:hover::before{opacity:1}
+  .spot-card h3{font-size:18px;font-weight:600;margin-bottom:8px}
+  .spot-card p{font-size:14px;color:var(--muted);line-height:1.5}
+  .spot-card .num{font-size:32px;font-weight:700;color:rgba(234,231,226,.08);margin-bottom:16px}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Paradigm 25 — Spotlight Border Cards</div>
+  <h1>Borders illuminate under your cursor</h1>
+  <p>A shared grid where the border between cards lights up wherever the mouse is. Unified grid, not isolated cards. Move your cursor across the grid below.</p>
+</section>
+<section class="grid-section">
+  <div class="grid-label">Move your cursor across the grid</div>
+  <div class="spot-grid" id="spotGrid">
+    <div class="spot-card"><div class="num">01</div><h3>Edge Functions</h3><p>Deploy server logic to 30+ regions. Sub-20ms cold starts. Auto-scaling by default.</p></div>
+    <div class="spot-card"><div class="num">02</div><h3>Real-time Database</h3><p>WebSocket subscriptions, row-level security, and automatic schema migrations.</p></div>
+    <div class="spot-card"><div class="num">03</div><h3>Auth</h3><p>Social logins, magic links, MFA. Self-hosted or managed. RBAC built in.</p></div>
+    <div class="spot-card"><div class="num">04</div><h3>Storage</h3><p>File uploads with CDN distribution. Image transforms on the fly. 10GB free tier.</p></div>
+    <div class="spot-card"><div class="num">05</div><h3>Analytics</h3><p>Privacy-first event tracking. Funnels, cohorts, and real-time dashboards.</p></div>
+    <div class="spot-card"><div class="num">06</div><h3>Billing</h3><p>Stripe integration, usage metering, and invoice generation. One API call.</p></div>
+  </div>
+</section>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Grid feels alive</h2>
+  <p>The spotlight tracks your cursor across the entire grid, illuminating borders as you move. It unifies separate cards into a single interactive surface. Vercel, Linear, and Supabase all use variants of this pattern for their feature grids. The subtle glow signals interactivity without screaming for attention.</p>
+</section>
+<footer>Paradigm Demo — Spotlight Border Cards</footer>
+<script>
+(function(){
+  var grid=document.getElementById('spotGrid');
+  grid.addEventListener('mousemove',function(e){
+    var cards=grid.querySelectorAll('.spot-card');
+    cards.forEach(function(c){
+      var r=c.getBoundingClientRect();
+      c.style.setProperty('--mx',(e.clientX-r.left)+'px');
+      c.style.setProperty('--my',(e.clientY-r.top)+'px');
+    });
+  });
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

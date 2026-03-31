@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curtain Reveal — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e;--accent:#e85d3a;--border:#1e1e22}
+  *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,6vw,64px);font-weight:600;line-height:1.15;max-width:700px;letter-spacing:-.025em}
+  .hero h1 span{color:var(--accent)}
+  .hero p{margin-top:16px;font-size:18px;color:var(--muted);max-width:50ch;line-height:1.5}
+  .curtain-section{position:relative;height:300vh}
+  .curtain-sticky{position:sticky;top:0;height:100dvh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .curtain-left,.curtain-right{position:absolute;top:0;bottom:0;width:50%;background:var(--bg);z-index:2;display:flex;align-items:center}
+  .curtain-left{left:0;justify-content:flex-end;padding-right:40px;border-right:1px solid var(--border)}
+  .curtain-right{right:0;justify-content:flex-start;padding-left:40px;border-left:1px solid var(--border)}
+  .curtain-left h2,.curtain-right h2{font-size:clamp(36px,7vw,80px);font-weight:700;letter-spacing:-.04em;line-height:.95}
+  .curtain-content{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(135deg,#1a120a,#0d0a08);padding:40px}
+  .curtain-content h3{font-size:clamp(24px,4vw,48px);font-weight:600;letter-spacing:-.02em;margin-bottom:12px}
+  .curtain-content p{font-size:17px;color:var(--muted);max-width:45ch;line-height:1.6;margin-bottom:24px}
+  .curtain-content a{display:inline-block;padding:12px 32px;background:var(--accent);color:var(--bg);border-radius:10px;text-decoration:none;font-size:14px;font-weight:500;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+  .curtain-content a:hover{transform:translateY(-1px) scale(1.03)}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(232,93,58,.2);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Paradigm 13 — Curtain Reveal</div>
+  <h1>The hero <span>parts open</span> like a curtain</h1>
+  <p>Two halves of the screen slide apart on scroll, revealing the content behind. Dramatic entrances for product launches and brand reveals.</p>
+</section>
+<section class="curtain-section">
+  <div class="curtain-sticky">
+    <div class="curtain-content">
+      <h3>The product lives here</h3>
+      <p>Behind the curtain is your reveal moment. Product launch, announcement, or hero video. The visitor scrolls to open it.</p>
+      <a href="#">Explore now</a>
+    </div>
+    <div class="curtain-left" id="cLeft"><h2>DIS</h2></div>
+    <div class="curtain-right" id="cRight"><h2>COVER</h2></div>
+  </div>
+</section>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Theatre creates memory</h2>
+  <p>The curtain metaphor is universally understood — something is about to be revealed. It builds anticipation and makes the reveal moment feel like an event. Product launches, portfolio pieces, and brand stories all benefit from this dramatic entrance.</p>
+</section>
+<footer>Paradigm Demo — Curtain Reveal</footer>
+<script>
+(function(){
+  gsap.registerPlugin(ScrollTrigger);
+  var s=document.querySelector('.curtain-section');
+  gsap.to('#cLeft',{xPercent:-100,ease:'power2.inOut',scrollTrigger:{trigger:s,start:'top top',end:'60% top',scrub:.5}});
+  gsap.to('#cRight',{xPercent:100,ease:'power2.inOut',scrollTrigger:{trigger:s,start:'top top',end:'60% top',scrub:.5}});
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

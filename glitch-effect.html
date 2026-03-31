@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glitch Effect — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e;--accent:#ff3b3b;--cyan:#00f0ff;--border:#1e1e22}
+  *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,6vw,64px);font-weight:600;line-height:1.15;max-width:700px;letter-spacing:-.025em}
+  .glitch-section{display:flex;align-items:center;justify-content:center;min-height:60vh;padding:40px 24px}
+  .glitch{position:relative;font-size:clamp(60px,12vw,160px);font-weight:800;letter-spacing:-.04em;text-transform:uppercase;cursor:default}
+  .glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}
+  .glitch::before{color:var(--cyan);clip-path:inset(0 0 70% 0);animation:none;transform:translate(0)}
+  .glitch::after{color:var(--accent);clip-path:inset(70% 0 0 0);animation:none;transform:translate(0)}
+  .glitch:hover::before{animation:glitchTop .4s steps(2) infinite}
+  .glitch:hover::after{animation:glitchBot .4s steps(3) infinite}
+  @keyframes glitchTop{0%{clip-path:inset(0 0 80% 0);transform:translate(-3px,-2px)}25%{clip-path:inset(20% 0 50% 0);transform:translate(3px,1px)}50%{clip-path:inset(40% 0 30% 0);transform:translate(-2px,2px)}75%{clip-path:inset(60% 0 10% 0);transform:translate(2px,-1px)}100%{clip-path:inset(0 0 80% 0);transform:translate(0)}}
+  @keyframes glitchBot{0%{clip-path:inset(80% 0 0 0);transform:translate(3px,1px)}33%{clip-path:inset(50% 0 20% 0);transform:translate(-3px,-2px)}66%{clip-path:inset(30% 0 40% 0);transform:translate(2px,2px)}100%{clip-path:inset(80% 0 0 0);transform:translate(0)}}
+  .glitch-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:700px;margin:0 auto;padding:60px 24px}
+  .g-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:32px 24px;position:relative;overflow:hidden;transition:border-color .3s}
+  .g-card:hover{border-color:var(--accent)}
+  .g-card h3{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;margin-bottom:6px;position:relative}
+  .g-card:hover h3{animation:textGlitch .15s steps(2) 3}
+  .g-card p{font-size:13px;color:var(--muted);line-height:1.5}
+  .g-card::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(0,240,255,.02) 50%);background-size:100% 4px;pointer-events:none;opacity:0;transition:opacity .3s}
+  .g-card:hover::after{opacity:1}
+  @keyframes textGlitch{0%{transform:translate(0)}25%{transform:translate(-2px,1px)}50%{transform:translate(2px,-1px)}75%{transform:translate(-1px,-1px)}100%{transform:translate(0)}}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(255,59,59,.2);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+  @media(max-width:768px){.glitch-cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Paradigm 19 — Glitch Effect</div>
+  <h1>RGB channel split on hover. Digital distortion.</h1>
+</section>
+<section class="glitch-section">
+  <div class="glitch" data-text="GLITCH">GLITCH</div>
+</section>
+<div class="glitch-cards">
+  <div class="g-card"><h3>Cyberpunk aesthetic</h3><p>RGB channel splitting with clip-path creates a digital distortion effect. Pure CSS, no canvas needed.</p></div>
+  <div class="g-card"><h3>Hover-triggered</h3><p>The glitch fires only on hover. Constant glitching is distracting — controlled bursts create drama.</p></div>
+  <div class="g-card"><h3>Scanline overlay</h3><p>CRT-style scanlines on the cards add to the digital aesthetic. A 4px repeating gradient at low opacity.</p></div>
+  <div class="g-card"><h3>Zero JavaScript</h3><p>The entire effect is CSS keyframes with clip-path and translate. GPU-accelerated, no layout thrashing.</p></div>
+</div>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Controlled chaos</h2>
+  <p>The glitch effect signals edge, disruption, and technical confidence. Gaming, music, cybersecurity, and tech-forward brands use it to stand out from clean corporate sites. The key is restraint — a brief hover burst, not constant noise.</p>
+</section>
+<footer>Paradigm Demo — Glitch Effect</footer>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

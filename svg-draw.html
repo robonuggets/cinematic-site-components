@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll SVG Draw — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e;--accent:#5eadb5;--border:#1e1e22}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,6vw,64px);font-weight:600;line-height:1.15;max-width:700px;letter-spacing:-.025em}
+  .hero h1 span{color:var(--accent)}
+  .hero p{margin-top:16px;font-size:18px;color:var(--muted);max-width:50ch;line-height:1.5}
+  .draw-section{position:relative;min-height:300vh;max-width:800px;margin:0 auto;padding:0 24px}
+  .draw-sticky{position:sticky;top:0;min-height:100dvh;display:flex;align-items:center;justify-content:center}
+  .draw-svg{width:100%;max-width:600px}
+  .draw-svg path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .milestone{position:absolute;left:50%;transform:translateX(-50%);text-align:center;opacity:0;width:80%}
+  .milestone h3{font-size:20px;font-weight:600;margin-bottom:6px}
+  .milestone p{font-size:14px;color:var(--muted);line-height:1.5}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(94,173,181,.2);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Paradigm 12 — Scroll SVG Draw</div>
+  <h1>Lines <span>draw themselves</span> as you scroll</h1>
+  <p>SVG paths with stroke-dashoffset animated by scroll position. Perfect for timelines, roadmaps, and journey narratives.</p>
+</section>
+<section class="draw-section">
+  <div class="draw-sticky">
+    <svg class="draw-svg" viewBox="0 0 400 500" id="drawSvg">
+      <path id="mainPath" d="M200,20 C200,20 80,80 80,140 C80,200 320,200 320,260 C320,320 80,320 80,380 C80,440 200,480 200,480"/>
+      <circle cx="200" cy="20" r="6" fill="#5eadb5" opacity=".3"/>
+      <circle cx="80" cy="140" r="6" fill="#5eadb5" opacity=".3"/>
+      <circle cx="320" cy="260" r="6" fill="#5eadb5" opacity=".3"/>
+      <circle cx="80" cy="380" r="6" fill="#5eadb5" opacity=".3"/>
+      <circle cx="200" cy="480" r="6" fill="#5eadb5" opacity=".3"/>
+    </svg>
+  </div>
+  <div class="milestone" style="top:5%"><h3>Concept</h3><p>Initial discovery and strategic direction</p></div>
+  <div class="milestone" style="top:28%"><h3>Design</h3><p>Wireframes, prototypes, and visual language</p></div>
+  <div class="milestone" style="top:50%"><h3>Build</h3><p>Production code, tested and optimised</p></div>
+  <div class="milestone" style="top:72%"><h3>Launch</h3><p>Deploy, monitor, and iterate</p></div>
+  <div class="milestone" style="top:92%"><h3>Scale</h3><p>Growth loops and continuous improvement</p></div>
+</section>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Progress made visible</h2>
+  <p>The drawn path is a visual metaphor for a journey. Timelines, roadmaps, and process steps become spatial — the visitor literally scrolls through your workflow. Stroke-dashoffset is GPU-friendly and works on any SVG.</p>
+</section>
+<footer>Paradigm Demo — Scroll SVG Draw</footer>
+<script>
+(function(){
+  gsap.registerPlugin(ScrollTrigger);
+  var path=document.getElementById('mainPath');
+  var len=path.getTotalLength();
+  path.style.strokeDasharray=len;
+  path.style.strokeDashoffset=len;
+  gsap.to(path,{strokeDashoffset:0,ease:'none',scrollTrigger:{trigger:'.draw-section',start:'top top',end:'bottom bottom',scrub:.3}});
+  document.querySelectorAll('.milestone').forEach(function(m,i){
+    gsap.to(m,{opacity:1,duration:.5,scrollTrigger:{trigger:'.draw-section',start:(15+i*20)+'% top',end:(22+i*20)+'% top',scrub:true}});
+  });
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

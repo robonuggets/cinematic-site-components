@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horizontal Scroll Hijack — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root { --bg: #08080a; --surface: #111114; --text: #eae7e2; --muted: #5a5a5e; --accent: #5eadb5; --border: #1e1e22; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+  .hero {
+    min-height: 100dvh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 40px 24px;
+  }
+  .hero-label { font-size: 12px; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+  .hero h1 { font-size: clamp(32px, 6vw, 64px); font-weight: 600; line-height: 1.15; max-width: 750px; letter-spacing: -0.025em; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { margin-top: 16px; font-size: 18px; color: var(--muted); max-width: 50ch; line-height: 1.5; }
+  .scroll-hint { margin-top: 48px; font-size: 13px; color: var(--muted); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  /* ─── Horizontal Section ─── */
+  .h-scroll-section { overflow: hidden; }
+  .h-scroll-sticky { position: sticky; top: 0; height: 100dvh; display: flex; align-items: center; overflow: hidden; }
+  .h-scroll-track {
+    display: flex; gap: 32px;
+    padding: 0 max(48px, 5vw);
+    will-change: transform;
+  }
+
+  .h-card {
+    flex-shrink: 0;
+    width: clamp(300px, 40vw, 500px);
+    height: 65vh;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 32px;
+    cursor: default;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .h-card:hover { transform: translateY(-4px); }
+
+  .h-card-bg {
+    position: absolute; inset: 0; z-index: 0;
+    transition: transform 0.5s ease;
+  }
+  .h-card:hover .h-card-bg { transform: scale(1.04); }
+
+  .h-card-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(to top, rgba(8,8,10,0.9) 0%, rgba(8,8,10,0.3) 40%, transparent 70%);
+  }
+
+  .h-card-content { position: relative; z-index: 2; }
+  .h-card-num { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; font-weight: 400; }
+  .h-card h3 { font-size: 24px; font-weight: 600; letter-spacing: -0.015em; margin-bottom: 6px; }
+  .h-card p { font-size: 14px; color: var(--muted); line-height: 1.5; max-width: 35ch; }
+
+  /* Progress bar */
+  .h-progress { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); z-index: 50; display: flex; align-items: center; gap: 12px; opacity: 0; transition: opacity 0.3s; }
+  .h-progress.visible { opacity: 1; }
+  .h-progress-bar { width: 120px; height: 2px; background: var(--border); border-radius: 1px; overflow: hidden; }
+  .h-progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.1s; }
+  .h-progress-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+
+  /* ─── Explanation ─── */
+  .explain { padding: 120px 24px; text-align: center; max-width: 680px; margin: 0 auto; border-top: 1px solid #1a1a1d; }
+  .explain .tag { display: inline-block; font-size: 11px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); border: 1px solid rgba(94,173,181,0.2); padding: 4px 12px; border-radius: 100px; margin-bottom: 20px; }
+  .explain h2 { font-size: clamp(24px, 4vw, 40px); font-weight: 600; letter-spacing: -0.02em; margin-bottom: 16px; }
+  .explain p { font-size: 17px; color: var(--muted); line-height: 1.6; }
+  footer { border-top: 1px solid #1a1a1d; padding: 24px; text-align: center; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-label">Paradigm 06 — Horizontal Scroll Hijack</div>
+  <h1>Scroll down, move <span>sideways</span></h1>
+  <p>Vertical scroll translates into a horizontal gallery. The visitor's natural scroll gesture drives a cinematic horizontal pan through your content.</p>
+  <div class="scroll-hint">Scroll down</div>
+</section>
+
+<section class="h-scroll-section" id="hSection">
+  <div class="h-scroll-sticky">
+    <div class="h-scroll-track" id="hTrack">
+      <div class="h-card">
+        <div class="h-card-bg" style="background: linear-gradient(135deg, #1a2a2e, #0d1a1c);"></div>
+        <div class="h-card-overlay"></div>
+        <div class="h-card-content">
+          <div class="h-card-num">01 / Strategy</div>
+          <h3>Research the market</h3>
+          <p>Competitive analysis, user interviews, and positioning workshops. Find the gap before you build.</p>
+        </div>
+      </div>
+      <div class="h-card">
+        <div class="h-card-bg" style="background: linear-gradient(135deg, #2a1a2e, #1c0d1a);"></div>
+        <div class="h-card-overlay"></div>
+        <div class="h-card-content">
+          <div class="h-card-num">02 / Design</div>
+          <h3>Define the experience</h3>
+          <p>Wireframes, prototypes, and a design system that scales. Every pixel has a purpose.</p>
+        </div>
+      </div>
+      <div class="h-card">
+        <div class="h-card-bg" style="background: linear-gradient(135deg, #2e2a1a, #1a1c0d);"></div>
+        <div class="h-card-overlay"></div>
+        <div class="h-card-content">
+          <div class="h-card-num">03 / Build</div>
+          <h3>Ship production code</h3>
+          <p>TypeScript, edge functions, CI/CD pipelines. Production-grade from day one, not a prototype.</p>
+        </div>
+      </div>
+      <div class="h-card">
+        <div class="h-card-bg" style="background: linear-gradient(135deg, #1a2e1f, #0d1c12);"></div>
+        <div class="h-card-overlay"></div>
+        <div class="h-card-content">
+          <div class="h-card-num">04 / Launch</div>
+          <h3>Go to market</h3>
+          <p>Landing pages, waitlists, Product Hunt prep, and launch day orchestration. We handle the rollout.</p>
+        </div>
+      </div>
+      <div class="h-card">
+        <div class="h-card-bg" style="background: linear-gradient(135deg, #2e1a1a, #1c0d0d);"></div>
+        <div class="h-card-overlay"></div>
+        <div class="h-card-content">
+          <div class="h-card-num">05 / Scale</div>
+          <h3>Grow and iterate</h3>
+          <p>Analytics, A/B tests, performance optimisation. Turn launch into traction. Data drives every decision.</p>
+        </div>
+      </div>
+      <div class="h-card">
+        <div class="h-card-bg" style="background: linear-gradient(135deg, #1a1e2e, #0d1018);"></div>
+        <div class="h-card-overlay"></div>
+        <div class="h-card-content">
+          <div class="h-card-num">06 / Support</div>
+          <h3>Retain and expand</h3>
+          <p>Ongoing maintenance, feature sprints, and a retainer that keeps your product ahead of the market.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="h-progress" id="hProgress">
+  <div class="h-progress-bar"><div class="h-progress-fill" id="hFill"></div></div>
+  <div class="h-progress-label" id="hLabel">1 / 6</div>
+</div>
+
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Gallery without a carousel</h2>
+  <p>Carousels have terrible engagement. Horizontal scroll hijack solves the same problem — showing many items in sequence — but uses the visitor's natural scroll gesture instead of tiny arrow buttons. Agencies, portfolios, and process timelines all convert better with this pattern.</p>
+</section>
+
+<footer>Paradigm Demo — Horizontal Scroll Hijack</footer>
+
+<script>
+(function() {
+  gsap.registerPlugin(ScrollTrigger);
+  var track = document.getElementById('hTrack');
+  var section = document.getElementById('hSection');
+  var cards = track.querySelectorAll('.h-card');
+  var progress = document.getElementById('hProgress');
+  var fill = document.getElementById('hFill');
+  var label = document.getElementById('hLabel');
+
+  // Calculate how far to scroll horizontally
+  function getScrollDistance() {
+    return track.scrollWidth - window.innerWidth;
+  }
+
+  // Set section height to accommodate horizontal scroll
+  var totalCards = cards.length;
+  section.style.height = (totalCards * 100) + 'vh';
+
+  gsap.to(track, {
+    x: function() { return -getScrollDistance(); },
+    ease: 'none',
+    scrollTrigger: {
+      trigger: section,
+      start: 'top top',
+      end: 'bottom bottom',
+      scrub: 0.5,
+      invalidateOnRefresh: true,
+      onUpdate: function(self) {
+        var p = self.progress;
+        fill.style.width = (p * 100) + '%';
+        label.textContent = Math.min(Math.ceil(p * totalCards + 0.5), totalCards) + ' / ' + totalCards;
+      },
+      onEnter: function() { progress.classList.add('visible'); },
+      onLeave: function() { progress.classList.remove('visible'); },
+      onEnterBack: function() { progress.classList.add('visible'); },
+      onLeaveBack: function() { progress.classList.remove('visible'); }
+    }
+  });
+})();
+</script>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>

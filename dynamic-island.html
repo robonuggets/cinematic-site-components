@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic Island Nav — Paradigm Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0b;--text:#eae7e2;--muted:#5a5a5e;--accent:#4f46e5;--border:#1e1e22}
+  *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+  .hero-label{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,6vw,64px);font-weight:600;line-height:1.15;max-width:700px;letter-spacing:-.025em}
+  .hero h1 span{color:var(--accent)}
+  .hero p{margin-top:16px;font-size:18px;color:var(--muted);max-width:50ch;line-height:1.5}
+  .island{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;background:#1a1a1f;border:1px solid #2a2a30;border-radius:100px;padding:8px 20px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .5s cubic-bezier(.16,1,.3,1);overflow:hidden;max-height:44px}
+  .island.expanded{border-radius:20px;padding:20px 24px;max-height:280px;flex-direction:column;align-items:stretch;gap:16px;width:320px;margin-left:-160px;left:50%}
+  .island-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;animation:breathe 2s ease infinite}
+  @keyframes breathe{0%,100%{opacity:.6}50%{opacity:1}}
+  .island-label{font-size:13px;font-weight:500;white-space:nowrap;transition:opacity .2s}
+  .island.expanded .island-label{display:none}
+  .island-content{display:none;flex-direction:column;gap:12px}
+  .island.expanded .island-content{display:flex}
+  .island-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.04);font-size:14px;transition:background .2s}
+  .island-item:hover{background:rgba(255,255,255,.08)}
+  .island-item .dot{width:6px;height:6px;border-radius:50%}
+  .island-close{font-size:12px;color:var(--muted);text-align:center;padding-top:4px}
+  .demo-section{min-height:200vh;padding:120px 24px;max-width:600px;margin:0 auto}
+  .demo-section h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px;text-align:center}
+  .demo-section p{font-size:17px;color:var(--muted);line-height:1.6;text-align:center;margin-bottom:40px}
+  .demo-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .demo-btn{padding:10px 20px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:background .2s,border-color .2s}
+  .demo-btn:hover{background:#1e1e22;border-color:#333}
+  .explain{padding:120px 24px;text-align:center;max-width:680px;margin:0 auto;border-top:1px solid #1a1a1d}
+  .explain .tag{display:inline-block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(79,70,229,.15);padding:4px 12px;border-radius:100px;margin-bottom:20px}
+  .explain h2{font-size:clamp(24px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin-bottom:16px}
+  .explain p{font-size:17px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid #1a1a1d;padding:24px;text-align:center;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="island" id="island" onclick="toggleIsland()">
+  <div class="island-dot"></div>
+  <div class="island-label">3 notifications</div>
+  <div class="island-content">
+    <div class="island-item"><div class="dot" style="background:#22c55e"></div>Deployment successful</div>
+    <div class="island-item"><div class="dot" style="background:#eab308"></div>2 pending reviews</div>
+    <div class="island-item"><div class="dot" style="background:#e85d3a"></div>API latency spike detected</div>
+    <div class="island-close">Tap to collapse</div>
+  </div>
+</div>
+<section class="hero">
+  <div class="hero-label">Paradigm 28 — Dynamic Island Nav</div>
+  <h1>A pill that <span>morphs</span> to show status</h1>
+  <p>Inspired by Apple's Dynamic Island. A compact nav pill that expands to show notifications, alerts, or a mini-menu. Click the pill at the top of this page.</p>
+</section>
+<section class="demo-section">
+  <h2>Trigger different states</h2>
+  <p>Click the buttons below to change the island's content dynamically.</p>
+  <div class="demo-buttons">
+    <button class="demo-btn" onclick="setIsland('Downloading... 47%','#4f46e5')">Download</button>
+    <button class="demo-btn" onclick="setIsland('Call from Marcus R.','#22c55e')">Incoming call</button>
+    <button class="demo-btn" onclick="setIsland('Payment received: $2,400','#c8a97e')">Payment</button>
+    <button class="demo-btn" onclick="setIsland('Build failed: exit code 1','#e85d3a')">Error</button>
+    <button class="demo-btn" onclick="resetIsland()">Reset</button>
+  </div>
+</section>
+<section class="explain">
+  <div class="tag">Why it works</div>
+  <h2>Status without interruption</h2>
+  <p>The Dynamic Island delivers information without a full modal or toast notification. It's persistent but compact — the visitor sees the status at a glance and can expand for details. Dashboards, SaaS apps, and notification-heavy products benefit from this pattern. The morphing animation makes state changes feel continuous, not jarring.</p>
+</section>
+<footer>Paradigm Demo — Dynamic Island Nav</footer>
+<script>
+function toggleIsland(){document.getElementById('island').classList.toggle('expanded')}
+function setIsland(text,color){
+  var island=document.getElementById('island');
+  island.classList.remove('expanded');
+  island.querySelector('.island-dot').style.background=color;
+  island.querySelector('.island-label').textContent=text;
+  island.style.animation='islandPulse .3s ease';
+  setTimeout(function(){island.style.animation=''},300);
+}
+function resetIsland(){
+  var island=document.getElementById('island');
+  island.querySelector('.island-dot').style.background='#4f46e5';
+  island.querySelector('.island-label').textContent='3 notifications';
+}
+</script>
+<style>@keyframes islandPulse{0%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.05)}100%{transform:translateX(-50%) scale(1)}}</style>
+<div style="position:fixed;bottom:0;left:0;right:0;padding:8px 16px;font-size:11px;color:#5a5a5e;text-align:center;z-index:99;background:rgba(9,9,11,.85);backdrop-filter:blur(8px);border-top:1px solid #1e1e22;font-family:Outfit,sans-serif">&copy; Created by Jay from <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboLabs</a>. Learn more at <a href="https://robonuggets.com" style="color:#e8793a;text-decoration:none">RoboNuggets</a></div>
+</body>
+</html>
